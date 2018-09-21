@@ -19,6 +19,7 @@ public class PGoodsRecordHibernateDao {
         SessionFactory sessionFactory = config.buildSessionFactory();
         Session session = sessionFactory.openSession();
         session.beginTransaction();
+        System.out.println(sql);
         Query query = session.createQuery(sql);
         for (String key: param.keySet()) {
             query.setParameter(key, param.get(key));

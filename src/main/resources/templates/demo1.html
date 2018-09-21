@@ -359,11 +359,13 @@
                                     })
                                 }
                                 console.log(perms.data)
-                                patiobject.curPage = 1;
-                                console.log(parseInt(perms.data / 10) + (perms.data % 10 != 0 ? 1 : 0));
-                                patiobject.pageTotal = parseInt(perms.data / 10) + (perms.data % 10 != 0 ? 1 : 0);
-                                patiobject.dataTotal = perms.data;
-                                patiobject.init()
+								if (result.length > 0) {
+                                    patiobject.curPage = 1;
+                                    console.log(parseInt(perms.data / 10) + (perms.data % 10 != 0 ? 1 : 0));
+                                    patiobject.pageTotal = parseInt(perms.data / 10) + (perms.data % 10 != 0 ? 1 : 0);
+                                    patiobject.dataTotal = perms.data;
+                                    patiobject.init()
+								}
 							}));
 
 					},
