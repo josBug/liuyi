@@ -1,0 +1,482 @@
+
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous"/>
+	<meta charset="utf-8" />
+
+	<title>陆在的登录系统</title>
+
+	<!--[if IE]><script>
+
+	$(document).ready(function() { 
+
+
+
+$("#form_wrap").addClass('hide');
+
+
+
+})
+
+
+
+</script><![endif]-->
+	<script src="http://www.jq22.com/jquery/1.7.2/jquery.min.js"></script>
+
+
+<style>
+
+
+
+
+
+body, div, h1,h2, form, fieldset, input, textarea, footer,p {
+
+	margin: 0; padding: 0; border: 0; outline: none;
+
+}
+
+
+
+
+
+
+
+body {
+
+	color: #7c7873;
+
+	font-family: 'YanoneKaffeesatzRegular';
+
+	background-color: #D7D7D7;
+
+}
+
+p {position:relative;text-shadow:0 1px 0 #fff; font-size:24px;transition: all 1s ease-in-out .3s;-webkit-transition: all 1s ease-in-out .3s;font-size-adjust: 0.24}
+
+#wrap {width:530px; margin:20px auto 0; height:1000px;}
+
+h1 {margin-bottom:20px; text-align:center;font-size:48px; text-shadow:0 1px 0 #ede8d9; }
+
+
+
+
+
+	#form_wrap { overflow:hidden; height:446px; position:relative; top:0px;
+
+		-webkit-transition: all 1s ease-in-out .3s;
+
+		-moz-transition: all 1s ease-in-out .3s;
+
+		-o-transition: all 1s ease-in-out .3s;
+
+		transition: all 1s ease-in-out .3s;}
+
+	
+
+	#form_wrap:before {content:"";
+
+		position:absolute;
+
+		bottom:128px;left:0px;
+
+		background:url('images/before.png');
+
+		width:530px;height: 316px;}
+
+	
+
+	#form_wrap:after {content:"";position:absolute;
+
+		bottom:0px;left:0;
+
+		background:url('images/after.png');
+
+		width:530px;height: 260px; }
+
+
+
+	#form_wrap.hide:after, #form_wrap.hide:before {display:none; }
+
+	#form_wrap:hover {height:776px;top:-200px;}
+
+
+
+
+
+	form {background:#f7f2ec url('images/letter_bg.png'); 
+
+		position:relative;top:200px;overflow:hidden;
+
+		height:200px;width:400px;margin:0px auto;padding:20px; 
+
+		border: 1px solid #fff;
+
+		border-radius: 3px;
+
+		-moz-border-radius: 3px; -webkit-border-radius: 3px;
+
+		box-shadow: 0px 0px 3px #9d9d9d, inset 0px 0px 27px #fff;
+
+		-moz-box-shadow: 0px 0px 3px #9d9d9d, inset 0px 0px 14px #fff;
+
+		-webkit-box-shadow: 0px 0px 3px #9d9d9d, inset 0px 0px 27px #fff;
+
+		-webkit-transition: all 1s ease-in-out .3s;
+
+		-moz-transition: all 1s ease-in-out .3s;
+
+		-o-transition: all 1s ease-in-out .3s;
+
+		transition: all 1s ease-in-out .3s;}
+
+
+
+
+
+		#form_wrap:hover form {height:530px;}
+
+
+
+		label {
+			position: relative;
+			margin: 11px 20px 0 0; 
+
+			font-size: 16px; color: #b3aba1;
+
+			text-transform: uppercase; 
+
+			text-shadow: 0px 1px 0px #fff;
+
+		}
+
+
+
+		input[id=user], textarea {
+
+			position: relative;
+			font: 14px normal normal uppercase helvetica, arial, serif;
+
+			color: #7c7873;background:none;
+
+			width: 380px; height: 36px; padding: 0px 10px; margin: 0 0 10px 0;
+
+			border:1px solid #f8f5f1;
+
+			-moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px;
+
+			-moz-box-shadow: inset 0px 0px 1px #726959;
+
+			-webkit-box-shadow:  inset 0px 0px 1px #b3a895; 
+
+			box-shadow:  inset 0px 0px 1px #b3a895;
+
+		}
+
+		input[id=passwd], textarea {
+
+			position: relative;
+			font: 14px normal normal uppercase helvetica, arial, serif;
+
+			color: #7c7873;background:none;
+
+			width: 380px; height: 36px; padding: 0px 10px; margin: 0 0 10px 0;
+
+			border:1px solid #f8f5f1;
+
+			-moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px;
+
+			-moz-box-shadow: inset 0px 0px 1px #726959;
+
+			-webkit-box-shadow:  inset 0px 0px 1px #b3a895;
+
+			box-shadow:  inset 0px 0px 1px #b3a895;
+
+		}
+
+		textarea { height: 80px; padding-top:14px;}
+
+
+
+		textarea:focus, input[type=text]:focus {background:rgba(255,255,255,.35);}
+
+
+
+		#form_wrap input[name=login] {
+
+			position:relative;font-family: 'YanoneKaffeesatzRegular'; 
+
+			font-size:24px; color: #7c7873;text-shadow:0 1px 0 #fff;
+
+			width:100%; text-align:center;opacity:0;
+
+			background:none;
+
+			cursor: pointer;
+
+			-moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; 
+
+			-webkit-transition: opacity .6s ease-in-out 0s;
+
+			-moz-transition: opacity .6s ease-in-out 0s;
+
+			-o-transition: opacity .6s ease-in-out 0s;
+
+			transition: opacity .6s ease-in-out 0s;
+
+		}
+
+
+
+		#form_wrap:hover input[name=login] {z-index:1;opacity:1;
+
+			-webkit-transition: opacity .5s ease-in-out 1.3s;
+
+			-moz-transition: opacity .5s ease-in-out 1.3s;
+
+			-o-transition: opacity .5s ease-in-out 1.3s;
+
+			transition: opacity .5s ease-in-out 1.3s;}
+
+
+
+			#form_wrap:hover input:hover[name=login] {color:#435c70;}
+
+
+
+</style>
+<style>
+	@font-face {
+		font-weight: normal;
+		font-style: normal;
+		font-family: 'icomoon';
+		src:url('./fonts/icomoon/icomoon.eot?-9heso');
+		src:url('./fonts/icomoon/icomoon.eot?#iefix-9heso') format('embedded-opentype'),
+		url('./fonts/icomoon/icomoon.woff?-9heso') format('woff'),
+		url('./fonts/icomoon/icomoon.ttf?-9heso') format('truetype'),
+		url('./fonts/icomoon/icomoon.svg?-9heso#icomoon') format('svg');
+	}
+	.emailblock {
+		position: relative;
+		width: 380px; height: 36px;
+		background:none;
+	}
+	#email {
+		position: relative;
+		font: 14px normal normal uppercase helvetica, arial, serif;
+
+		color: #7c7873;background:none;
+
+		top:0px; left:0px;width:100%;
+		height: 36px;
+		padding: 0px 10px; margin: 0 0 10px 0;
+
+		border:1px solid #f8f5f1;
+
+		-moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px;
+
+		-moz-box-shadow: inset 0px 0px 1px #726959;
+
+		-webkit-box-shadow:  inset 0px 0px 1px #b3a895;
+
+		box-shadow:  inset 0px 0px 1px #b3a895;
+	}
+	.next {
+		float: right;
+		position: absolute;
+		display: inline;
+		padding: 0;
+		top:2px;
+		left:190px;
+		width: 10px;
+		height: 10px;
+		border: none;
+		background: none;
+		color: rgba(0,0,0,0.4);
+		text-align: center;
+		opacity: 0;
+		z-index: 100;
+		cursor: pointer;
+		-webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
+		transition: transform 0.3s, opacity 0.3s;
+		-webkit-transform: translateX(-20%);
+		transform: translateX(-20%);
+		pointer-events: none;
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+
+	.next:hover {
+		color: rgba(0,0,0,0.5);
+	}
+
+	.next::after {
+		float: right;
+		position: absolute;
+		top: 2px;
+		left: 190px;
+		width: 10px;
+		height: 10px;
+		content: "\e600";
+		text-transform: none;
+		font-weight: normal;
+		font-style: normal;
+		font-variant: normal;
+		font-family: 'icomoon';
+		line-height: 2;
+		speak: none;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	.next.show {
+		float: right;
+		position: absolute;
+		top: 2px;
+		left: 190px;
+		width: 10px;
+		height: 10px;
+		opacity: 1;
+		-webkit-transform: translateX(0);
+		transform: translateX(0);
+		pointer-events: auto;
+	}
+
+	.pbscope {
+		position: relative;
+		width: 397px;
+		background: none;
+		color: rgba(255,0,0,0.5);
+		height: 4px;
+		padding: 2px;
+		border: 0px solid hsla(0,0%,90%,.5);
+	}
+	.pb-bar {
+		position: relative;
+		left:0px;
+		top:0px;
+		color: rgba(255,0,0,0);
+		width: 0px;
+		height: 4px;
+		background: #b3aba1;
+		transition:width 1s;
+		-webkit-transition:width 1s;
+	}
+	.top-banner {
+
+    background-color: #555;
+
+  }
+
+</style>
+<script>
+	function nextShow() {
+        /*<![CDATA[*/
+        if (document.getElementById("reg").value === "注册账号") {
+            if (document.getElementById("email").value === "请点击右边发送按钮获取验证") {
+                document.getElementById("email").defaultValue = "请输入你收到的验证码";
+                document.getElementById("email").value = "请输入你收到的验证码";
+
+            } else {
+                document.getElementById("email").defaultValue = "请点击右边发送按钮获取验证";
+                document.getElementById("email").value = "请点击右边发送按钮获取验证";
+            }
+            var widthsource = document.getElementById("process").style.width;
+            if (widthsource != '190px' && widthsource != '397px') {
+                document.getElementById("process").style.width = 190 + "px";
+            } else if (widthsource === '190px') {
+                document.getElementById("process").style.width = 397 + "px";
+            }
+		} else {
+            document.getElementById("process").style.width = 397 + "px";
+            setTimeout("registry(true)", 2000);
+        }
+
+        /*]]>*/
+    }
+    function registry(r) {
+        /*<![CDATA[*/
+        if (r === true) {
+            document.getElementById("ly").style.width = "0px";
+            document.getElementById("ly").style.padding = "0px";
+            document.getElementById("ly").style.border = "0px";
+            document.getElementById("process").style.width = 0 + "px";
+            setTimeout("registry(false)", 1300);
+        } else {
+            if (document.getElementById("reg").value === '注册账号') {
+                document.getElementById("welcome").innerHTML = '<p id="welcome">WELCOME REGISTRY HOUSE</p>';
+                document.getElementById("name_lable").innerHTML = '<label id="name_lable" for="user">请输入你要注册的用户名</label>';
+                document.getElementById("passwd_lable").innerHTML = '<label id="passwd_lable" for="passwd">请输入你的密码</label>';
+                document.getElementById("email_lable").innerHTML = '<label id="email_lable" for="email">请输入你的邮箱</label>';
+                document.getElementById("email").value = "请点击右边注册按钮";
+                document.getElementById("email").defaultValue = "请点击右边注册按钮";
+                document.getElementById("reg").value = "";
+                $("#reg").hide();
+            } else {
+                document.getElementById("welcome").innerHTML = '<p id="welcome">WELCOME TO MY HOUSE</p>';
+                document.getElementById("name_lable").innerHTML = '<label id="name_lable" for="user">你的名字呦</label>';
+                document.getElementById("passwd_lable").innerHTML = '<label id="passwd_lable" for="passwd">你的密码呦: </label>';
+                document.getElementById("email_lable").innerHTML = '<label id="email_lable" for="email">你的验证码呦: </label>';
+                document.getElementById("email").value = "请点击右边发送按钮获取验证码";
+                document.getElementById("email").defaultValue = "请点击右边发送按钮获取验证码";
+                document.getElementById("reg").value = "注册账号";
+                $("#reg").show();
+			}
+
+            document.getElementById("ly").style.width = "400px";
+            document.getElementById("ly").style.padding = "20px";
+            document.getElementById("ly").style.border ="1px solid #fff";
+        }
+
+        /*]]>*/
+    }
+</script>
+</head>
+
+<body style="margin-top: 60px">
+
+	<div id="wrap">
+
+		<h1>陆在的登录系统</h1>
+
+		<div id='form_wrap'>
+
+			<form id="ly">
+
+				<p id="welcome">WELCOME TO MY HOUSE</p>
+
+				<label id="name_lable" for="user">你的名字呦</label>
+
+				<input type="text" name="user" value="请输入你的用户名" id="user" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/>
+
+				<br />
+				<br />
+				<label id="passwd_lable" for="passwd">你的密码呦: </label>
+
+				<input type="text" name="passwd" value="请输入你的密码" id="passwd" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/>
+
+				<br />
+				<br />
+				<label id="email_lable" for="email">你的验证码呦: </label>
+				<div class="emailblock">
+					<input type="text" name="code" value="请点击右边发送按钮获取验证码" id="email" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/>
+					<div class="next show" onclick="nextShow()"></div>
+				</div>
+				<div class="pbscope"><div class="pb-bar" id="process"></div></div>
+				<br />
+				<br />
+				<input id="reg" type="button" name="login" value="注册账号" onclick="registry(true)"/>
+			</form>
+		</div>
+	</div>
+
+<div style="position:fixed;height:90px;width:100%;left:0;bottom:10px"><div class="footer-banner" style="width:728px; margin:0px auto"></div></div>
+
+
+
+</body>
+
+</html>

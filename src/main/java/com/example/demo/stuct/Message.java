@@ -1,0 +1,25 @@
+package com.example.demo.stuct;
+
+import lombok.Data;
+
+@Data
+public class Message {
+
+    private String goods;
+
+    private String code;
+
+    private String color;
+
+    private int amount;
+
+    private double price;
+
+    private String names;
+
+    private double tip;
+
+    private String remark;
+
+    private int send;
+}

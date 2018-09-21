@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<link rel="stylesheet" href="css/myPagination.css">
+		<script src="js/myPagination.js"></script>
+		<title>form</title>
+		<style type="text/css">
+			#table table {
+				width: 100%;
+				font-size: 14px;
+				border: 1px solid #eee
+			}
+			
+			#table {
+				padding: 0 10px;
+			}
+			
+			table thead th {
+				background: #f5f5f5;
+				padding: 10px;
+				text-align: left;
+			}
+			
+			table tbody td {
+				padding: 10px;
+				text-align: left;
+				border-bottom: 1px solid #eee;
+				border-right: 1px solid #eee;
+			}
+			
+			table tbody td span {
+				margin: 0 10px;
+				cursor: pointer;
+			}
+			
+			.delete {
+				color: red;
+			}
+			
+			.edit {
+				color: #008cd5;
+			}
+			
+			.add {
+				border: 1px solid #eee;
+				margin: 10px 0;
+				padding: 15px;
+			}
+			
+			input {
+				border: 1px solid #ccc;
+				padding: 5px;
+				border-radius: 3px;
+				margin-right: 15px;
+			}
+			
+			button {
+				background: #008cd5;
+				border: 0;
+				padding: 4px 15px;
+				border-radius: 3px;
+				color: #fff;
+			}
+			#select{
+				margin:100px;
+				background: rgba(0,0,0,0);
+				width: 128px;
+				height: 27px;
+				font-family: "微软雅黑";
+				font-size: 18px;
+				color: white;
+				border: 1px #1a1a1a solid;
+				border-radius: 5px;
+			}
+			.select-head{
+				overflow: hidden;
+				width: 128px;
+				height: 32px;
+				box-sizing: border-box;
+				padding: 0 10px;
+				line-height: 40px;
+				margin: 5px;
+			}
+			.select-head .select-head-cont{
+				float: left;
+			}
+			.select-head .select-icon{
+				float: right;
+			}
+			.option{
+				text-indent: 10px;
+				margin-top: 1px;
+				width: 249px;
+				color: black;
+				background: rgba(255,255,255,0.1);
+				line-height: 25px;
+				border: 1px #cfcfcf solid;
+				display: none;
+			}
+			.option-item:hover{
+				background: rgba(204,106,67,0.3);
+			}
+
+			#mask {
+				background: rgba(0, 0, 0, .5);
+				width: 100%;
+				height: 100%;
+				position: fixed;
+				z-index: 4;
+				top: 0;
+				left: 0;
+			}
+			
+			.mask {
+				width: 320px;
+				height:400px;
+				background: rgba(255, 255, 255, 1);
+				position: absolute;
+				left: 0;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				margin: auto;
+				z-index: 47;
+				border-radius: 5px;
+			}
+			
+			.title {
+				padding: 10px;
+				border-bottom: 1px solid #eee;
+			}
+			
+			.title span {
+				float: right;
+				cursor: pointer;
+			}
+			
+			.content {
+				padding: 10px;
+			}
+			
+			.content input {
+				width: 270px;
+				margin-bottom: 15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="table" style="background: none">
+			<div class="add" style="background: none;border: none">
+				<input type="text" v-model="addDetail.name" name="name" value="" placeholder="姓名" />
+				<input type="text" v-model="addDetail.goods" name="goods" value="" placeholder="商品" />
+				<select v-model="send" class="select-head">
+					<option>全部</option>
+					<option>发货</option>
+					<option>未发货</option>
+				</select>
+				<select v-model="payment" class="select-head">
+					<option>全部</option>
+					<option>付款</option>
+					<option>未付款</option>
+				</select>
+				<input type="date" v-model="addDetail.startdates" name="startdates" value="" placeholder="开始时间" />
+				<input type="date" v-model="addDetail.enddates" name="enddates" value="" placeholder="结束时间" />
+				<button @click="adddetail(0, 10)">搜索</button>
+				<button @click="adddetail(0, 10)">全部发货</button>
+				<button @click="adddetail(0, 10)">全部付款</button>
+			</div>
+			<table cellpadding="0" cellspacing="0" style="background: white">
+				<thead>
+					<tr>
+						<th>序号</th>
+						<th>表单ID</th>
+						<th>付款</th>
+						<th>姓名</th>
+						<th>商品名</th>
+						<th>编号</th>
+						<th>颜色</th>
+						<th>数量</th>
+						<th>总价</th>
+						<th>原价</th>
+						<th>代购费</th>
+						<th>发货</th>
+						<th>操作</th>
+						<th>备注</th>
+						<th>录入时间</th>
+						<th>更新时间</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(item,index) in newsList">
+						<td width="5%">{{index+1}}</td>
+						<td width="5%">{{item.formId}}</td>
+						<td width="3%">{{item.pay}}</td>
+						<td width="7%">{{item.name}}</td>
+						<td width="7%">{{item.goods}}</td>
+						<td width="7%">{{item.code}}</td>
+						<td width="7%">{{item.color}}</td>
+						<td width="5%">{{item.amount}}</td>
+						<td width="5%">{{item.total}}</td>
+						<td width="5%">{{item.original}}</td>
+						<td width="3%">{{item.fee}}</td>
+						<td width="5%">{{item.send}}</td>
+						<td width="7%"><span class="edit" @click="edit(item)">编辑</span></td>
+						<td width="10%">{{item.remark}}</td>
+						<td width="8%">{{item.createTime}}</td>
+						<td width="8%">{{item.updateTime}}</td>
+					</tr>
+				</tbody>
+			</table>
+			<div id="pagination" class="pagination" ref="pageref" style="background: white;border-top-color: #9d9d9d;margin: 0px"></div>
+			<div id="mask" v-if="editlist">
+				<div class="mask">
+					<div class="title">
+						编辑
+						<span @click="editlist=false">
+							X
+						</span>
+					</div>
+					<div class="content" style="overflow:auto;width: 300px;height: 300px">
+						<select v-model="editDetail.pay" class="select-head">
+							<option>付款</option>
+							<option>未付款</option>
+						</select>
+						<select v-model="editDetail.send" class="select-head">
+							<option>发货</option>
+							<option>未发货</option>
+						</select>
+						<input type="text" v-model="editDetail.name" name="name" value="" placeholder="姓名" />
+						<input type="text" v-model="editDetail.goods" name="goods" value="" placeholder="商品名" />
+						<input type="text" v-model="editDetail.code" name="code" value="" placeholder="编号" />
+						<input type="text" v-model="editDetail.color" name="color" value="" placeholder="颜色" />
+						<input type="text" v-model="editDetail.amount" name="amount" value="" placeholder="数量" />
+						<input type="text" v-model="editDetail.original" name="original" value="" placeholder="原价" />
+						<input type="text" v-model="editDetail.fee" name="fee" value="" placeholder="代购费" />
+						<input type="text" v-model="editDetail.remark" name="remark" value="" placeholder="备注" />
+						<button @click="update">更新</button>
+						<button @click="editlist=false">取消</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			var patiobject = {}
+			var app = new Vue({
+				el: '#table',
+				data: {
+					addDetail: {},
+					editlist: false,
+					editDetail: {},
+					newsList: [],
+					editid:'',
+					formId:'',
+                    payment:'全部',
+                    send:'全部',
+					createTime:'',
+                    updateTime:''
+				},
+				mounted() {
+				    let _self = this
+                    patiobject = new myPagination({
+                        id: 'pagination',
+                        curPage:0, //初始页码
+                        pageTotal: 0, //总页数
+                        pageAmount: 10,  //每页多少条
+                        dataTotal: 0, //总共多少条数据
+                        pageSize: 5, //可选,分页个数
+                        showPageTotalFlag:true, //是否显示数据统计
+                        showSkipInputFlag:true, //是否支持跳转
+                        getPage: function (page) {
+                            console.log(page);
+                            _self.addPage(page, 10, _self.data)
+                        }
+                    })
+				},
+				methods: {
+				    query(offset, limit) {
+                        var ksid = localStorage.getItem("ksid");
+                        var user = localStorage.getItem("user");
+				        return axios.post('/search',
+                            {
+                                ver:'1.0',
+                                session:ksid,
+                                userName:user,
+                                object: {
+                                    goodsName:this.addDetail.goods,
+                                    name:this.addDetail.name,
+                                    startTime:this.addDetail.startdates,
+                                    endTime:this.addDetail.enddates,
+                                    offset:offset,
+                                    limit:limit,
+                                    ksid:ksid
+                                }
+                            },
+                            {
+                                headers: {
+                                    'ContentType': 'application/json; charset=utf-8'
+                                }
+                            });
+					},
+                    count(offset, limit) {
+                        var ksid = localStorage.getItem("ksid");
+                        var user = localStorage.getItem("user");
+                        return axios.post('/search/count',
+                            {
+                                ver:'1.0',
+                                session:ksid,
+                                userName:user,
+                                object: {
+                                    goodsName:this.addDetail.goods,
+                                    name:this.addDetail.name,
+                                    startTime:this.addDetail.startdates,
+                                    endTime:this.addDetail.enddates,
+                                    offset:offset,
+                                    limit:limit,
+                                    ksid:ksid
+                                }
+                            },
+                            {
+                                headers: {
+                                    'ContentType': 'application/json; charset=utf-8'
+                                }
+                            });
+                    },
+					//新增
+					adddetail(offset, limit) {
+						//这里的思路应该是把this.addDetail传给服务端，然后加载列表this.newsList
+						//this.newsList.push(this.addDetail)
+						this.newsList = []
+                        var ksid = localStorage.getItem("ksid");
+                        var user = localStorage.getItem("user");
+                        var result = {}
+                        axios.all([this.query(offset, limit),this.count(offset, limit)])
+							.then(axios.spread((response, perms) =>{
+                                result = JSON.parse(JSON.stringify(response.data))
+                                for (var i = 0; i < result.length; ++ i) {
+                                    this.newsList.push({
+                                        formId: result[i].id,
+                                        pay: result[i].isPay == 1 ? '是' : '否',
+                                        name: result[i].name,
+                                        goods:result[i].goodsName,
+                                        code: result[i].code,
+                                        color: result[i].color,
+                                        amount: result[i].amount,
+                                        total: result[i].countPrice,
+                                        original: result[i].oldPrice,
+                                        fee: result[i].tip,
+                                        send: result[i].send == 1 ? '是' : '否',
+                                        remark: result[i].remark,
+                                        createTime:result[i].createAt,
+                                        updateTime:result[i].updateAt
+                                    })
+                                }
+                                console.log(perms.data)
+                                patiobject.curPage = 1;
+                                console.log(parseInt(perms.data / 10) + (perms.data % 10 != 0 ? 1 : 0));
+                                patiobject.pageTotal = parseInt(perms.data / 10) + (perms.data % 10 != 0 ? 1 : 0);
+                                patiobject.dataTotal = perms.data;
+                                patiobject.init()
+							}));
+
+					},
+                    addPage(page, limit) {
+                        this.newsList = []
+                        var ksid = localStorage.getItem("ksid");
+                        var user = localStorage.getItem("user");
+                        var result = {}
+                        axios.post('/search',
+                            {
+                                ver:'1.0',
+                                session:ksid,
+                                userName:user,
+                                object: {
+                                    goodsName:this.addDetail.goods,
+                                    name:this.addDetail.name,
+                                    startTime:this.addDetail.startdates,
+                                    endTime:this.addDetail.enddates,
+                                    offset:(page - 1) * limit,
+                                    limit:limit,
+                                    ksid:ksid
+                                }
+                            },
+                            {
+                                headers: {
+                                    'ContentType': 'application/json; charset=utf-8'
+                                }
+                            }).then(response => {
+                            result = JSON.parse(JSON.stringify(response.data))
+                            for (var i = 0; i < result.length; ++ i) {
+                                this.newsList.push({
+                                    formId: result[i].id,
+                                    pay: result[i].isPay == 1 ? '是' : '否',
+                                    name: result[i].name,
+                                    goods:result[i].goodsName,
+                                    code: result[i].code,
+                                    color: result[i].color,
+                                    amount: result[i].amount,
+                                    total: result[i].countPrice,
+                                    original: result[i].oldPrice,
+                                    fee: result[i].tip,
+                                    send: result[i].send == 1 ? '是' : '否',
+                                    remark: result[i].remark,
+                                    createTime:result[i].createAt,
+                                    updateTime:result[i].updateAt
+                                })
+                            }
+                            console.log('+++++++++++++++++++++++')
+
+                            patiobject.curPage = page;
+                            patiobject.init()
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
+                    },
+					//删除
+					deletelist(id, i) {
+						this.newsList.splice(i, 1);
+						//这边可以传id给服务端进行删除  ID = id
+						//axios.get('url',{ID:id}).then((res) =>{
+						//			加载列表				
+						//})
+					},
+					//编辑
+					edit(item) {
+						console.log(item)
+						this.editDetail = {
+                            pay: item.pay == '是' ? '付款' : '未付款',
+                            name: item.name,
+                            goods:item.goods,
+                            code: item.code,
+                            color: item.color,
+                            amount: item.amount,
+                            original: item.original,
+                            fee: item.fee,
+                            send: item.send == '是' ? '发货' : '未发货',
+                            remark: item.remark
+						}
+						this.editlist = true
+						this.formId = item.formId
+						this.editid = item.id
+						this.createTime = item.createTime
+						this.updateTime = item.updateTime
+						
+					},
+					//确认更新
+					update() {
+						//编辑的话，也是传id去服务端
+						//axios.get('url',{ID:id}).then((res) =>{
+						//			加载列表				
+						//})
+                        var ksid = localStorage.getItem("ksid");
+                        var user = localStorage.getItem("user");
+                        axios.post('/update',
+						{
+							ver:'1.0',
+							session:ksid,
+							userName:user,
+							object: {
+								goodsRecord:{
+									id:this.formId,
+									goodsName:this.editDetail.goods,
+									code:this.editDetail.code,
+									color:this.editDetail.color,
+									amount:this.editDetail.amount,
+									oldPrice:this.editDetail.original,
+									tip:this.editDetail.fee,
+									send:this.editDetail.send == '发货' ? 1 : 0,
+									isPay:this.editDetail.pay == '付款' ? 1 : 0,
+									remark:this.editDetail.remark,
+									name:this.editDetail.name
+								}
+							}
+						},
+						{
+							headers: {
+								'ContentType': 'application/json; charset=utf-8'
+							}
+						}).then(response => {
+							var res = JSON.parse(JSON.stringify(response.data))
+                            console.log(res)
+                            let _this= this
+                            console.log("_this.newsList[i].id：" +_this.newsList)
+                            if (res.code == 200) {
+                                for(let i = 0; i < _this.newsList.length; i++) {
+                                    console.log("_this.newsList[i].id：" +_this.newsList[i].id)
+                                    if(_this.newsList[i].id === this.editid) {
+                                        console.log("data：" +this.editid)
+                                        _this.newsList[i] = {
+                                            pay: _this.editDetail.pay == '付款' ? '是' : '否',
+                                            name: _this.editDetail.name,
+                                            goods:_this.editDetail.goods,
+                                            code: _this.editDetail.code,
+                                            color: _this.editDetail.color,
+                                            amount: _this.editDetail.amount,
+                                            total: _this.editDetail.original + _this.editDetail.fee * _this.editDetail.amount,
+                                            original: _this.editDetail.original,
+                                            fee: _this.editDetail.fee,
+                                            send: _this.editDetail.send ? '是' : '否',
+                                            remark: _this.editDetail.remark,
+                                            id: this.editid,
+                                            createTime:_this.createTime,
+											updateTime:_this.updateTime
+                                        }
+                                        this.editlist = false
+                                    }
+                                }
+							}
+						}).catch(error => {
+
+						});
+					}
+				}
+			})
+		</script>
+	</body>
+
+
+</html>

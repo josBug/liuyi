@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>响应式Tabs jQueyr插件</title>
+		<link rel="stylesheet" type="text/css" href="css/responsive.tabs.css" media="all" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous"/>
+		<title>陆在的代购系统</title>
+		<script src="http://www.jq22.com/jquery/1.7.2/jquery.min.js"></script>
+		<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="js/responsive.tabs.js"></script>
+		<style type="text/css">
+			*{ margin:0; padding:0; list-style:none; }
+			body { font:14px/1.8 "Microsoft Yahei"; }
+			.demo { width:1000px; margin:20px auto 50px; }
+			.demo h1 { font-size:28px; font-weight:normal; margin-bottom:50px; }
+			.tips { color:#999; font-size:12px; margin:50px 0 20px; }
+
+			.tab-content { background-color:#f7f7f7; padding:10px; opacity: 1}
+			.tab-content h4, .accordion-content h4 { margin-bottom:5px; }
+			.tab-content p, .accordion-content p { margin-bottom:10px; }
+
+			@media only screen and ( max-width:1000px ){
+				body { margin:0 20px;}
+				.demo { width:100%; }
+			}
+			body {
+				color: #7c7873;
+				width:;
+				font-family: 'YanoneKaffeesatzRegular';
+				background-color: #D7D7D7;
+				margin: 0; padding: 0; border: 0; outline: none;
+			}
+			#table table {
+				width: 100%;
+				font-size: 14px;
+				border: none;
+			}
+			
+			#table {
+				position: relative;
+				left: 10px;
+				background: #f7f2ec;
+				top:50px;
+				padding: 0 10px;
+				border: none;
+				box-shadow: 10px 10px 5px #888888;
+			}
+
+			.submitline {
+				position: absolute;
+				left: 10px;
+				background: #f7f2ec;
+				width: 1391px;
+				top:0px;
+				height: 50px;
+				padding: 0 0px;
+				border: none;
+				box-shadow: 10px 10px 5px #888888;
+				cursor: pointer;
+				transition:height 2s;
+				-webkit-transition:height 2s;
+			}
+
+			table thead th {
+				width: 30px;
+				background: #f7f2ec;
+				text-align: left;
+				padding: 0px;
+				border: none;
+			}
+			
+			table tbody td {
+				width: 30px;
+				padding: 0px;
+				text-align: left;
+				border: none;
+			}
+			
+			table tbody td span {
+				display: block;
+				white-space: nowrap;
+				margin: 0 0px;
+				cursor: pointer;
+				border: none;
+			}
+			
+			.delete {
+				color: red;
+				margin: 5px;
+			}
+			
+			.edit {
+				color: #008cd5;
+				margin: 5px;
+			}
+			
+			.add {
+				background: #f7f2ec;
+				border: none;
+				margin: 10px 0;
+				padding: 15px;
+			}
+
+			input[type=date]{
+				border: 1px solid #ccc;
+				padding: 5px;
+				border-radius: 7px;
+				margin: 0px;
+				width: 100px;
+				cursor:pointer;
+			}
+
+			input {
+				border: 1px solid #ccc;
+				padding: 5px;
+				border-radius: 7px;
+				margin: 0px;
+				width: 100px;
+			}
+
+			table tbody td input {
+				position: relative;
+				left: 0px;
+				top:0px;
+				border: 1px solid #ccc;
+				padding: 5px;
+				border-radius: 7px;
+				margin: 0px;
+				width: 100px;
+			}
+			button {
+				background: #008cd5;
+				border: 0;
+				padding: 4px 15px;
+				border-radius: 3px;
+				color: #fff;
+			}
+
+			.sendtotal {
+				background: none;
+				border: 0;
+				padding: 0px 0px;
+				position: relative;
+				height: 25px;
+				width: 54px;
+				border-radius: 3px;
+				white-space: nowrap;
+			}
+			.send {
+				background: #00FF7F;
+				border: 0;
+				padding: 0px 0px;
+				position: absolute;
+				height: 25px;
+				width: 54px;
+				border-radius: 3px;
+				color: #fff;
+				white-space: nowrap;
+				transition:width 1s;
+				-webkit-transition:width 1s;
+				float: left;
+				cursor:pointer;
+				outline: none;
+
+			}
+			.sendafter {
+				background: #FF4040;
+				border: 0;
+				padding: 0px 0px;
+				position: relative;
+				height: 25px;
+				width: 54px;
+				border-radius: 3px;
+				color: #fff;
+				white-space: nowrap;
+				cursor:pointer;
+				outline: none;
+
+			}
+			#mask {
+				background: rgba(0, 0, 0, .5);
+				width: 100%;
+				height: 100%;
+				position: fixed;
+				z-index: 4;
+				top: 0;
+				left: 0;
+			}
+			
+			.mask {
+				width: 300px;
+				height: 250px;
+				background: rgba(255, 255, 255, 1);
+				position: absolute;
+				left: 0;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				margin: auto;
+				z-index: 47;
+				border-radius: 5px;
+			}
+			
+			.title {
+				padding: 10px;
+				border-bottom: 1px solid #eee;
+			}
+			
+			.title span {
+				float: right;
+				cursor: pointer;
+			}
+			
+			.content {
+				padding: 10px;
+			}
+			
+			.content input {
+				width: 270px;
+				margin-bottom: 15px;
+			}
+			.pb-bar {
+				position: relative;
+				left:0px;
+				top:0px;
+				color: rgba(255,0,0,0);
+				width: 100%;
+				height: 1px;
+				background: #FFFFFF;
+				transition:width 1s;
+				-webkit-transition:width 1s;
+			}
+			.submitbar {
+				position: relative;
+				left:650px;
+				top:35px;
+				color: #555;
+				width: 50px;
+				height: 1px;
+				background: #555;
+				transition:width 1s;
+				-webkit-transition:width 1s;
+			}
+			.submitbarafter {
+				position: relative;
+				left:630px;
+				top:40px;
+				color: #555;
+				width: 90px;
+				height: 1px;
+				background: #555;
+				transition:width 1s;
+				-webkit-transition:width 1s;
+			}
+		</style>
+		<script>
+            /*<![CDATA[*/
+            function sendtest() {
+				document.getElementById("sendy").style.width = 0 + "px";
+            }
+            function sendafter() {
+                document.getElementById("sendy").style.width = 54 + "px";
+            }
+            function paytest() {
+                document.getElementById("pay").style.width = 0 + "px";
+            }
+            function payafter() {
+                document.getElementById("pay").style.width = 54 + "px";
+            }
+            function sendsearchtest() {
+                document.getElementById("sendy_search").style.width = 0 + "px";
+            }
+            function sendsearchafter() {
+                document.getElementById("sendy_search").style.width = 54 + "px";
+            }
+            function paysearchtest() {
+                document.getElementById("pay_search").style.width = 0 + "px";
+            }
+            function paysearchafter() {
+                document.getElementById("pay_search").style.width = 54 + "px";
+            }
+            function test() {
+				var base = new Base64();
+				var res = base.encode("123");
+				alert(res);
+            }
+            function submitlinetotal() {
+				document.getElementById("subfragment").style.height = 500 + "px";
+                document.getElementById("table").style.visibility="hidden";
+            }
+            function resetsubmit() {
+				if (document.getElementById("subfragment").style.height != "50px") {
+                    document.getElementById("subfragment").style.height = 50 + "px";
+                    document.getElementById("table").style.visibility="visible";
+                }
+            }
+            function Base64() {
+
+                // private property
+                _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+                // public method for encoding
+                this.encode = function (input) {
+                    var output = "";
+                    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+                    var i = 0;
+                    input = _utf8_encode(input);
+                    while (i < input.length) {
+                        chr1 = input.charCodeAt(i++);
+                        chr2 = input.charCodeAt(i++);
+                        chr3 = input.charCodeAt(i++);
+                        enc1 = chr1 >> 2;
+                        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                        enc4 = chr3 & 63;
+                        if (isNaN(chr2)) {
+                            enc3 = enc4 = 64;
+                        } else if (isNaN(chr3)) {
+                            enc4 = 64;
+                        }
+                        output = output +
+                            _keyStr.charAt(enc1) + _keyStr.charAt(enc2) +
+                            _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
+                    }
+                    return output;
+                }
+
+                // public method for decoding
+                this.decode = function (input) {
+                    var output = "";
+                    var chr1, chr2, chr3;
+                    var enc1, enc2, enc3, enc4;
+                    var i = 0;
+                    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+                    while (i < input.length) {
+                        enc1 = _keyStr.indexOf(input.charAt(i++));
+                        enc2 = _keyStr.indexOf(input.charAt(i++));
+                        enc3 = _keyStr.indexOf(input.charAt(i++));
+                        enc4 = _keyStr.indexOf(input.charAt(i++));
+                        chr1 = (enc1 << 2) | (enc2 >> 4);
+                        chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+                        chr3 = ((enc3 & 3) << 6) | enc4;
+                        output = output + String.fromCharCode(chr1);
+                        if (enc3 != 64) {
+                            output = output + String.fromCharCode(chr2);
+                        }
+                        if (enc4 != 64) {
+                            output = output + String.fromCharCode(chr3);
+                        }
+                    }
+                    output = _utf8_decode(output);
+                    return output;
+                }
+
+                // private method for UTF-8 encoding
+                _utf8_encode = function (string) {
+                    string = string.replace(/\r\n/g,"\n");
+                    var utftext = "";
+                    for (var n = 0; n < string.length; n++) {
+                        var c = string.charCodeAt(n);
+                        if (c < 128) {
+                            utftext += String.fromCharCode(c);
+                        } else if((c > 127) && (c < 2048)) {
+                            utftext += String.fromCharCode((c >> 6) | 192);
+                            utftext += String.fromCharCode((c & 63) | 128);
+                        } else {
+                            utftext += String.fromCharCode((c >> 12) | 224);
+                            utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                            utftext += String.fromCharCode((c & 63) | 128);
+                        }
+
+                    }
+                    return utftext;
+                }
+
+                // private method for UTF-8 decoding
+                _utf8_decode = function (utftext) {
+                    var string = "";
+                    var i = 0;
+                    var c = c1 = c2 = 0;
+                    while ( i < utftext.length ) {
+                        c = utftext.charCodeAt(i);
+                        if (c < 128) {
+                            string += String.fromCharCode(c);
+                            i++;
+                        } else if((c > 191) && (c < 224)) {
+                            c2 = utftext.charCodeAt(i+1);
+                            string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                            i += 2;
+                        } else {
+                            c2 = utftext.charCodeAt(i+1);
+                            c3 = utftext.charCodeAt(i+2);
+                            string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                            i += 3;
+                        }
+                    }
+                    return string;
+                }
+            }
+            /*]]>*/
+
+            $(document).ready(function(){
+
+                $('.tabs').respTabs({
+                    startIndex : 2
+                });
+
+            });
+		</script>
+	</head>
+
+	<body>
+		<!--<div class="submitline" onclick="submitlinetotal()" id="subfragment">-->
+			<!--<div class="submitbar" onclick="resetsubmit()">-->
+			<!--</div>-->
+			<!--<div class="submitbarafter" onclick="resetsubmit()">-->
+			<!--</div>-->
+		<!--</div>-->
+		<div class="tabs">
+			<ul class="tabs-list">
+				<li class="active"><a href="javascript:;">代购录入</a></li>
+				<li><a href="javascript:;">搜索</a></li>
+			</ul>
+			<div class="tabs-container">
+				<div class="tab-content" style="display:block;">
+					<div class="add">
+						<input type="text"  id="goods_search_1" name="title" value="" placeholder="商品" />
+						<input type="text"  id="name_search_1" name="user" value="" placeholder="名字" />
+						<input type="date"  id="startdate_1" name="date" value="" placeholder="开始时间" />
+						<input type="date"  id="enddate_1" name="date" value="" placeholder="结束时间" />
+						<button onclick="">搜索</button>
+						<button onclick="">全部发货</button>
+						<button onclick="">全部付款</button>
+					</div>
+					<div class="pb-bar"/>
+					<table cellpadding="0" cellspacing="0">
+						<thead>
+						<tr>
+							<th>付款</th>
+							<th>姓名</th>
+							<th>商品名</th>
+							<th>编号</th>
+							<th>颜色</th>
+							<th>数量</th>
+							<th>总价</th>
+							<th>原价</th>
+							<th>代购费</th>
+							<th>发货</th>
+							<th>录入时间</th>
+							<th>操作</th>
+							<th>备注</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr>
+							<td>
+								<div class="sendtotal">
+									<input type="button" class="sendafter" value="未发货" onclick="sendafter()"/>
+									<input type="button" class="send" id="sendy_1" onclick="sendtest()" value="发货"/>
+								</div>
+							</td>
+							<td><input name="names_1" type="text" value="姓名" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/></td>
+							<td><input name="goods_1" type="text" value="商品名" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/></td>
+							<td><input name="code_1" type="text" value="编号" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/></td>
+							<td><input name="color_1" type="text" value="颜色" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/></td>
+							<td><input width="50%" name="amount_1" type="text" value="数量" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999" onkeyup="check(this)"/></td>
+							<td><input name="count_price_1" type="text" value="总价" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999" onkeyup="check(this)"/></td>
+							<td><input name="price_1" type="text" value="原价" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999" onkeyup="check(this)"/></td>
+							<td><input name="tip_1" type="text" value="代购费" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999" onkeyup="check(this)"/></td>
+							<td>
+								<div class="sendtotal">
+									<input type="button" class="sendafter" value="未付款" onclick="payafter()"/>
+									<input type="button" class="send" id="pay_1" onclick="paytest()" value="付款"/>
+								</div>
+							</td>
+							<td><input name="createtime_1" type="text" value="创建时间" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999" onkeyup="check(this)"/></td>
+							<td width="10%"><span onclick="test()" class="delete">删除</span><br /><span class="edit" onclick="">更新</span></td>
+							<td><input name="remark_1" type="text" value="备注" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/></td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="tab-content">
+					<div class="add">
+						<input type="text"  id="goods_search" name="title" value="" placeholder="商品" />
+						<input type="text"  id="name_search" name="user" value="" placeholder="名字" />
+						<input type="date"  id="startdate" name="date" value="" placeholder="开始时间" />
+						<input type="date"  id="enddate" name="date" value="" placeholder="结束时间" />
+						<button onclick="">搜索</button>
+						<button onclick="">全部发货</button>
+						<button onclick="">全部付款</button>
+					</div>
+					<div class="pb-bar"/>
+					<table cellpadding="0" cellspacing="0">
+						<thead>
+						<tr>
+							<th>付款</th>
+							<th>姓名</th>
+							<th>商品名</th>
+							<th>编号</th>
+							<th>颜色</th>
+							<th>数量</th>
+							<th>总价</th>
+							<th>原价</th>
+							<th>代购费</th>
+							<th>发货</th>
+							<th>录入时间</th>
+							<th>操作</th>
+							<th>备注</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr>
+							<td>
+								<div class="sendtotal">
+									<input type="button" class="sendafter" value="未发货" onclick="sendafter()"/>
+									<input type="button" class="send" id="sendy" onclick="sendtest()" value="发货"/>
+								</div>
+							</td>
+							<td><input name="names" type="text" value="姓名" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/></td>
+							<td><input name="goods" type="text" value="商品名" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/></td>
+							<td><input name="code" type="text" value="编号" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/></td>
+							<td><input name="color" type="text" value="颜色" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/></td>
+							<td><input width="50%" name="amount" type="text" value="数量" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999" onkeyup="check(this)"/></td>
+							<td><input name="count_price" type="text" value="总价" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999" onkeyup="check(this)"/></td>
+							<td><input name="price" type="text" value="原价" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999" onkeyup="check(this)"/></td>
+							<td><input name="tip" type="text" value="代购费" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999" onkeyup="check(this)"/></td>
+							<td>
+								<div class="sendtotal">
+									<input type="button" class="sendafter" value="未付款" onclick="payafter()"/>
+									<input type="button" class="send" id="pay" onclick="paytest()" value="付款"/>
+								</div>
+							</td>
+							<td><input name="createtime" type="text" value="创建时间" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999" onkeyup="check(this)"/></td>
+							<td width="10%"><span onclick="test()" class="delete">删除</span><br /><span class="edit" onclick="">更新</span></td>
+							<td><input name="remark" type="text" value="备注" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"/></td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
