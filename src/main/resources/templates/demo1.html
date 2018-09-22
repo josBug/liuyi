@@ -260,8 +260,7 @@
 					formId:'',
                     payment:'全部',
                     send:'全部',
-					createTime:'',
-                    updateTime:''
+					curPage:''
 				},
 				mounted() {
 				    let _self = this
@@ -447,8 +446,6 @@
 						this.editlist = true
 						this.formId = item.formId
 						this.editid = item.id
-						this.createTime = item.createTime
-						this.updateTime = item.updateTime
 						
 					},
 					//确认更新
@@ -487,33 +484,8 @@
 						}).then(response => {
 							var res = JSON.parse(JSON.stringify(response.data))
                             console.log(res)
-                            let _this= this
-                            console.log("_this.newsList[i].id：" +_this.newsList)
-                            if (res.code == 200) {
-                                for(let i = 0; i < _this.newsList.length; i++) {
-                                    console.log("_this.newsList[i].id：" +_this.newsList[i].id)
-                                    if(_this.newsList[i].id === this.editid) {
-                                        console.log("data：" +this.editid)
-                                        _this.newsList[i] = {
-                                            pay: _this.editDetail.pay == '付款' ? '是' : '否',
-                                            name: _this.editDetail.name,
-                                            goods:_this.editDetail.goods,
-                                            code: _this.editDetail.code,
-                                            color: _this.editDetail.color,
-                                            amount: _this.editDetail.amount,
-                                            total: _this.editDetail.original + _this.editDetail.fee * _this.editDetail.amount,
-                                            original: _this.editDetail.original,
-                                            fee: _this.editDetail.fee,
-                                            send: _this.editDetail.send ? '是' : '否',
-                                            remark: _this.editDetail.remark,
-                                            id: this.editid,
-                                            createTime:_this.createTime,
-											updateTime:_this.updateTime
-                                        }
-                                        this.editlist = false
-                                    }
-                                }
-							}
+                            this.addPage(patiobject.curPage,10)
+							this.editlist = false
 						}).catch(error => {
 
 						});
