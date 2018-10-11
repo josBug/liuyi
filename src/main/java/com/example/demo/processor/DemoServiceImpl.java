@@ -45,7 +45,8 @@ public class DemoServiceImpl implements DemoService {
                 goodsRecord.setRemark(message.getRemark());
                 goodsRecord.setUserName(lYopRequest.getUserName());
                 goodsRecord.setIsPay(0);
-                pGoodsRecordDao.save(goodsRecord);
+                pGoodsRecordHibernateDao.save(goodsRecord);
+
             });
             responseDemo.setCode(200);
             responseDemo.setRessult("success");

@@ -14,11 +14,15 @@ import java.util.Map;
 @Component
 public class PGoodsRecordHibernateDao {
 
-    public List<GoodsRecord> query(String sql, Map<String, Object> param, int offset, int limit) {
+    private static SessionFactory sessionFactory;
+
+    static {
         Configuration config = new Configuration().configure();
-        SessionFactory sessionFactory = config.buildSessionFactory();
+        sessionFactory = config.buildSessionFactory();
+    }
+
+    public List<GoodsRecord> query(String sql, Map<String, Object> param, int offset, int limit) {
         Session session = sessionFactory.openSession();
-        session.beginTransaction();
         System.out.println(sql);
         Query query = session.createQuery(sql);
         for (String key: param.keySet()) {
@@ -27,54 +31,42 @@ public class PGoodsRecordHibernateDao {
         query.setMaxResults(limit);
         query.setFirstResult(offset);
         List<GoodsRecord> list = query.list();
-        session.getTransaction().commit();
         session.close();
-        sessionFactory.close();
         return list;
     }
 
-    public int count(String sql, Map<String, Object> param, int offset, int limit) {
-        Configuration config = new Configuration().configure();
-        SessionFactory sessionFactory = config.buildSessionFactory();
+    public void save(GoodsRecord goodsRecord) {
         Session session = sessionFactory.openSession();
-        session.beginTransaction();
+        session.save(goodsRecord);
+        session.flush();
+        session.evict(goodsRecord);
+        session.close();
+    }
 
+    public int count(String sql, Map<String, Object> param, int offset, int limit) {
+        Session session = sessionFactory.openSession();
         Query query = session.createQuery(sql);
         for (String key: param.keySet()) {
             query.setParameter(key, param.get(key));
         }
 
         int count = ((Number)query.uniqueResult()).intValue();
-        session.getTransaction().commit();
-
         session.close();
-        sessionFactory.close();
         return count;
     }
 
     public void update(GoodsRecord goodsRecord) {
-        Configuration config = new Configuration().configure();
-        SessionFactory sessionFactory = config.buildSessionFactory();
         Session session = sessionFactory.openSession();
-        session.beginTransaction();
 
         session.update(goodsRecord);
-        session.getTransaction().commit();
-
+        session.flush();
+        session.evict(goodsRecord);
         session.close();
-        sessionFactory.close();
     }
 
     public void delete(GoodsRecord goodsRecord) {
-        Configuration config = new Configuration().configure();
-        SessionFactory sessionFactory = config.buildSessionFactory();
         Session session = sessionFactory.openSession();
-        session.beginTransaction();
-
         session.delete(goodsRecord);
-        session.getTransaction().commit();
-
         session.close();
-        sessionFactory.close();
     }
 }
