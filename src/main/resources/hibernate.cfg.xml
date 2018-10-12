@@ -27,10 +27,30 @@
         <!-- 指定自动生成数据表的策略 -->
         <property name="hbm2ddl.auto">update</property>
 
+
+        <!-- *********连接池配置*********** -->
+        <!-- 配置连接池驱动管理类 -->
+        <property name="hibernate.connection.provider_class">org.hibernate.c3p0.internal.C3P0ConnectionProvider</property>
+        <!-- 配置连接池参数信息 -->
+        <property name="hibernate.c3p0.max_size">5</property>	<!-- 最大连接数 -->
+        <property name="hibernate.c3p0.min_size">2</property>	<!-- 最小连接数 -->
+        <property name="hibernate.c3p0.timeout">5000</property>	<!-- 超时时间 -->
+        <property name="hibernate.c3p0.max_statements">100</property>	<!-- 最大执行的命令格个数 -->
+        <property name="hibernate.c3p0.idle_test_period">30000</property> <!-- 空闲测试时间 -->
+        <property name="hibernate.c3p0.acquire_increment">2</property>	<!-- 连接不够用时,每次增加的个数 -->
+        <!--
+            #hibernate.c3p0.max_size 2
+            #hibernate.c3p0.min_size 2
+            #hibernate.c3p0.timeout 5000
+            #hibernate.c3p0.max_statements 100
+            #hibernate.c3p0.idle_test_period 3000
+            #hibernate.c3p0.acquire_increment 2
+            #hibernate.c3p0.validate false
+        -->
+
         <!-- 指定关联的 .hbm.xml 文件 -->
         <mapping class="com.example.demo.mode.GoodsRecord"/>
         <mapping class="com.example.demo.mode.UserInfo"/>
     </session-factory>
-
 
 </hibernate-configuration>

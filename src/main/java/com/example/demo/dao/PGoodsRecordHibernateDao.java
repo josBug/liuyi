@@ -4,10 +4,15 @@ import com.example.demo.mode.GoodsRecord;
 import com.example.demo.stuct.SearchParam;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.jdbc.Work;
 import org.hibernate.query.Query;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +28,7 @@ public class PGoodsRecordHibernateDao {
 
     public List<GoodsRecord> query(String sql, Map<String, Object> param, int offset, int limit) {
         Session session = sessionFactory.openSession();
+
         System.out.println(sql);
         Query query = session.createQuery(sql);
         for (String key: param.keySet()) {
@@ -37,9 +43,16 @@ public class PGoodsRecordHibernateDao {
 
     public void save(GoodsRecord goodsRecord) {
         Session session = sessionFactory.openSession();
-        session.save(goodsRecord);
-        session.flush();
-        session.evict(goodsRecord);
+        session.beginTransaction();
+        try {
+            session.save(goodsRecord);
+            session.flush();
+            session.evict(goodsRecord);
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
+
+        session.getTransaction().commit();
         session.close();
     }
 
@@ -57,10 +70,16 @@ public class PGoodsRecordHibernateDao {
 
     public void update(GoodsRecord goodsRecord) {
         Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        try {
+            session.update(goodsRecord);
+            session.flush();
+            session.evict(goodsRecord);
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
 
-        session.update(goodsRecord);
-        session.flush();
-        session.evict(goodsRecord);
+        session.getTransaction().commit();
         session.close();
     }
 
