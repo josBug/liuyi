@@ -62,7 +62,7 @@ public class PGoodsRecordHibernateDao {
         for (String key: param.keySet()) {
             query.setParameter(key, param.get(key));
         }
-
+        System.out.println("================" + query.toString());
         int count = ((Number)query.uniqueResult()).intValue();
         session.close();
         return count;

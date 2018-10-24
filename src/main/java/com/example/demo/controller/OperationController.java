@@ -1,21 +1,22 @@
-package com.example.demo.processor;
+package com.example.demo.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.dao.PGoodsRecordDao;
 import com.example.demo.dao.PGoodsRecordHibernateDao;
-import com.example.demo.descriptior.DemoService;
 import com.example.demo.mode.GoodsRecord;
 import com.example.demo.stuct.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.*;
 
-@Component
-public class DemoServiceImpl implements DemoService {
+@RestController
+public class OperationController {
 
     @Autowired
     private PGoodsRecordDao pGoodsRecordDao;
@@ -25,7 +26,7 @@ public class DemoServiceImpl implements DemoService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    @Override
+    @RequestMapping(value = "/submit/json",produces = "application/json;charset=UTF-8",consumes = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo submitJson(@RequestBody LYopRequest lYopRequest) {
         ResponseDemo responseDemo = new ResponseDemo();
         System.out.println(JSONObject.toJSON(lYopRequest));
@@ -57,7 +58,7 @@ public class DemoServiceImpl implements DemoService {
         return responseDemo;
     }
 
-    @Override
+    @RequestMapping(value = "/search",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public List<GoodsRecord> search(@RequestBody LYopRequest lYopRequest) {
         SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
         if (searchParam != null) {
@@ -105,8 +106,9 @@ public class DemoServiceImpl implements DemoService {
         return Collections.EMPTY_LIST;
     }
 
-    @Override
-    public int searchCount(LYopRequest lYopRequest) {
+    @RequestMapping(value = "/search/count",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public int searchCount(@RequestBody LYopRequest lYopRequest) {
+        System.out.println("search++++++++++++++++++++++++");
         SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
         if (searchParam != null) {
             String sql = "SELECT COUNT(1) FROM GoodsRecord ";
@@ -146,14 +148,14 @@ public class DemoServiceImpl implements DemoService {
                 sql += "createAt <= :endTime";
             }
             sql += " order by createAt desc";
-            System.out.println(sql);
-            System.out.println(JSONObject.toJSON(param));
+            System.out.println("count+++++++++" + sql);
+            System.out.println("count+++++++++" + JSONObject.toJSON(param));
             return pGoodsRecordHibernateDao.count(sql, param, searchParam.getOffset(), searchParam.getLimit());
         }
         return 0;
     }
 
-    @Override
+    @RequestMapping(value = "/update",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo update(@RequestBody LYopRequest lYopRequest) {
         OperationRequest operationRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(OperationRequest.class));
         ResponseDemo responseDemo = new ResponseDemo();
@@ -171,7 +173,7 @@ public class DemoServiceImpl implements DemoService {
         return responseDemo;
     }
 
-    @Override
+    @RequestMapping(value = "/delete",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo delete(@RequestBody LYopRequest lYopRequest) {
         OperationRequest operationRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(OperationRequest.class));
         ResponseDemo responseDemo = new ResponseDemo();

@@ -1,15 +1,15 @@
-package com.example.demo.processor;
+package com.example.demo.controller;
 
 import com.example.demo.dao.PUserInfoHibernateDao;
-import com.example.demo.descriptior.UserService;
 import com.example.demo.stuct.CheckUserInfo;
 import com.example.demo.stuct.LYopRequest;
 import com.example.demo.stuct.ResponseDemo;
-import com.example.demo.stuct.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.Message;
@@ -20,20 +20,20 @@ import javax.mail.internet.MimeMessage;
 import java.util.Date;
 import java.util.Properties;
 
-@Component
-public class UserServiceImpl implements UserService {
+@RestController
+public class UserController {
 
     @Autowired
     private PUserInfoHibernateDao pUserInfoHibernateDao;
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    @Override
+    @RequestMapping(value = "/",produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
     public ModelAndView sign() {
         ModelAndView modelAndView = new ModelAndView("index");
         return modelAndView;
     }
 
-    @Override
+    @RequestMapping(value = "/registry",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo registry(@RequestBody LYopRequest lYopRequest) {
         CheckUserInfo checkUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(CheckUserInfo.class));
 
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    @Override
+    @RequestMapping(value = "/check/user",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo checkUser(@RequestBody LYopRequest lYopRequest) {
         CheckUserInfo checkUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(CheckUserInfo.class));
 
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
         return responseDemo;
     }
 
-    @Override
+    @RequestMapping(value = "/check/status",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo checkStatus(@RequestBody LYopRequest lYopRequest) {
         CheckUserInfo checkUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(CheckUserInfo.class));
         ResponseDemo responseDemo = new ResponseDemo();
@@ -124,7 +124,7 @@ public class UserServiceImpl implements UserService {
         return responseDemo;
     }
 
-    @Override
+    @RequestMapping(value = "/loginout",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo loginout(@RequestBody LYopRequest lYopRequest) {
         CheckUserInfo checkUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(CheckUserInfo.class));
         ResponseDemo responseDemo = new ResponseDemo();
@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
         return responseDemo;
     }
 
-    @Override
+    @RequestMapping(value = "/send/code",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo sendEmailCode(@RequestBody LYopRequest lYopRequest) {
         Properties properties = new Properties();
         ResponseDemo responseDemo = new ResponseDemo();
