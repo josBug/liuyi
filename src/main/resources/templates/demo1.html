@@ -190,6 +190,7 @@
 						<th>发货</th>
 						<th>操作</th>
 						<th>备注</th>
+						<th>来源</th>
 						<th>录入时间</th>
 						<th>更新时间</th>
 					</tr>
@@ -203,13 +204,14 @@
 						<td width="7%">{{item.goods}}</td>
 						<td width="7%">{{item.code}}</td>
 						<td width="7%">{{item.color}}</td>
-						<td width="5%">{{item.amount}}</td>
-						<td width="5%">{{item.total}}</td>
+						<td width="4%">{{item.amount}}</td>
+						<td width="4%">{{item.total}}</td>
 						<td width="5%">{{item.original}}</td>
-						<td width="3%">{{item.fee}}</td>
-						<td width="5%">{{item.send}}</td>
-						<td width="7%"><span class="edit" @click="edit(item)">编辑</span></td>
-						<td width="10%">{{item.remark}}</td>
+						<td width="2%">{{item.fee}}</td>
+						<td width="4%">{{item.send}}</td>
+						<td width="6%"><span class="edit" @click="edit(item)">编辑</span></td>
+						<td width="8%">{{item.remark}}</td>
+						<td width="7%">{{item.source}}</td>
 						<td width="8%">{{item.createTime}}</td>
 						<td width="8%">{{item.updateTime}}</td>
 					</tr>
@@ -353,6 +355,7 @@
                                         fee: result[i].tip,
                                         send: result[i].send == 1 ? '是' : '否',
                                         remark: result[i].remark,
+										source: result[i].source,
                                         createTime:result[i].createAt,
                                         updateTime:result[i].updateAt
                                     })
@@ -408,6 +411,7 @@
                                     fee: result[i].tip,
                                     send: result[i].send == 1 ? '是' : '否',
                                     remark: result[i].remark,
+                                    source: result[i].source,
                                     createTime:result[i].createAt,
                                     updateTime:result[i].updateAt
                                 })
