@@ -1,36 +1,51 @@
 package com.example.demo.dao;
 
 import com.example.demo.mode.GoodsRecord;
-import com.example.demo.stuct.SearchParam;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.jdbc.Work;
 import org.hibernate.query.Query;
-import org.springframework.orm.hibernate5.HibernateTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Repository
 public class PGoodsRecordHibernateDao {
 
-    private static SessionFactory sessionFactory;
+    private SessionFactory sessionFactory;
 
-    static {
+    @PostConstruct
+    public void initSessionFactory() {
         Configuration config = new Configuration().configure();
         sessionFactory = config.buildSessionFactory();
+    }
+
+    @PreDestroy
+    public void destorySession() {
+        sessionFactory.close();
     }
 
     public List<GoodsRecord> query(String sql, Map<String, Object> param, int offset, int limit) {
         Session session = sessionFactory.openSession();
 
         System.out.println(sql);
-        Query query = session.createQuery(sql);
+        Query query = null;
+        try {
+            Method createQuery = session.getClass().getMethod("createQuery", String.class);
+            query = (Query) createQuery.invoke(session, sql);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
         for (String key: param.keySet()) {
             query.setParameter(key, param.get(key));
         }

@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.example.demo.dao.PGoodsRecordDao;
 import com.example.demo.dao.PGoodsRecordHibernateDao;
 import com.example.demo.mode.GoodsRecord;
 import com.example.demo.stuct.*;
@@ -18,8 +17,6 @@ import java.util.*;
 @RestController
 public class OperationController {
 
-    @Autowired
-    private PGoodsRecordDao pGoodsRecordDao;
 
     @Autowired
     private PGoodsRecordHibernateDao pGoodsRecordHibernateDao;

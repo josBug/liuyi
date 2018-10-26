@@ -6,19 +6,34 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
-@Component
+@Repository
 public class PUserInfoHibernateDao {
 
-    public String checkUserInfo(String userName, String passwd, String emailCode) {
+    private SessionFactory sessionFactory;
+
+    @PostConstruct
+    public void initSessionFactory() {
         Configuration config = new Configuration().configure();
-        SessionFactory sessionFactory = config.buildSessionFactory();
+        sessionFactory = config.buildSessionFactory();
+    }
+
+    @PreDestroy
+    public void destorySession() {
+        sessionFactory.close();
+    }
+
+    public String checkUserInfo(String userName, String passwd, String emailCode) {
         Session session = sessionFactory.openSession();
 
-        session.beginTransaction();
         Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd and emailCode = :emailCode");
         query.setParameter("userName", userName);
         query.setParameter("passwd", passwd);
@@ -26,7 +41,6 @@ public class PUserInfoHibernateDao {
         query.setMaxResults(1000);
         List<UserInfo> list = query.list();
 
-        session.getTransaction().commit();
 
         if (list.size() != 1) {
             return null;
@@ -43,45 +57,33 @@ public class PUserInfoHibernateDao {
         session.getTransaction().commit();
 
         session.close();
-        sessionFactory.close();
         return ksid;
     }
 
     public String checkKsid(String ksid) {
-        Configuration config = new Configuration().configure();
-        SessionFactory sessionFactory = config.buildSessionFactory();
         Session session = sessionFactory.openSession();
 
-        session.beginTransaction();
         Query query = session.createQuery("FROM UserInfo where session = :ksid");
         query.setParameter("ksid", ksid);
         query.setMaxResults(1000);
         List<UserInfo> list = query.list();
-
-        session.getTransaction().commit();
 
         if (list.isEmpty()) {
             return null;
         }
 
         session.close();
-        sessionFactory.close();
         return list.get(0).getUserName();
     }
 
     public boolean checkLoginStatus(String userName, String ksid) {
-        Configuration config = new Configuration().configure();
-        SessionFactory sessionFactory = config.buildSessionFactory();
         Session session = sessionFactory.openSession();
 
-        session.beginTransaction();
         Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
         query.setParameter("userName", userName);
         query.setParameter("ksid", ksid);
         query.setMaxResults(1000);
         List<UserInfo> list = query.list();
-
-        session.getTransaction().commit();
 
         if (list.size() != 1) {
             return false;
@@ -99,23 +101,17 @@ public class PUserInfoHibernateDao {
         session.getTransaction().commit();
 
         session.close();
-        sessionFactory.close();
         return true;
     }
 
     public void loginOut(String userName, String ksid) {
-        Configuration config = new Configuration().configure();
-        SessionFactory sessionFactory = config.buildSessionFactory();
         Session session = sessionFactory.openSession();
 
-        session.beginTransaction();
         Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
         query.setParameter("userName", userName);
         query.setParameter("ksid", ksid);
         query.setMaxResults(1000);
         List<UserInfo> list = query.list();
-
-        session.getTransaction().commit();
 
         if (list.size() != 1) {
             return;
@@ -134,12 +130,9 @@ public class PUserInfoHibernateDao {
         session.getTransaction().commit();
 
         session.close();
-        sessionFactory.close();
     }
 
     public boolean registryUser(String userName, String passwd, String email) {
-        Configuration config = new Configuration().configure();
-        SessionFactory sessionFactory = config.buildSessionFactory();
         Session session = sessionFactory.openSession();
 
         session.beginTransaction();
@@ -168,23 +161,17 @@ public class PUserInfoHibernateDao {
         session.getTransaction().commit();
 
         session.close();
-        sessionFactory.close();
         return true;
     }
 
     public void updateEmailCode(String userName, String passwd, String emailCode) {
-        Configuration config = new Configuration().configure();
-        SessionFactory sessionFactory = config.buildSessionFactory();
         Session session = sessionFactory.openSession();
 
-        session.beginTransaction();
         Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
         query.setParameter("userName", userName);
         query.setParameter("passwd", passwd);
         query.setMaxResults(1000);
         List<UserInfo> list = query.list();
-
-        session.getTransaction().commit();
 
         if (list.size() != 1) {
             return;
@@ -198,6 +185,5 @@ public class PUserInfoHibernateDao {
         session.getTransaction().commit();
 
         session.close();
-        sessionFactory.close();
     }
 }
