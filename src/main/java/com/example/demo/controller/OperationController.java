@@ -109,7 +109,7 @@ public class OperationController {
         SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
         if (searchParam != null) {
             Map<String, Object> param = new HashMap<>();
-            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.COUNT);
+            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.SELECT_SUM);
             System.out.println("count+++++++++" + sql);
             System.out.println("count+++++++++" + JSONObject.toJSON(param));
             return pGoodsRecordHibernateDao.statictisGoods(sql, param);
