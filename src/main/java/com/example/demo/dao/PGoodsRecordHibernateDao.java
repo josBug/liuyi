@@ -101,7 +101,7 @@ public class PGoodsRecordHibernateDao {
         if (results.size() != 0) {
             Object[] res = results.get(0);
             statictisModel.setTips((Double)res[0]);
-            statictisModel.setAmounts((Integer) res[1]);
+            statictisModel.setAmounts((Long) res[1]);
             statictisModel.setCountPrices((Double)res[2]);
             statictisModel.setOldPrices((Double)res[3]);
         }

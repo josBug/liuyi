@@ -24,7 +24,7 @@ public class OperationFragment {
             if (param.isEmpty()) {
                 sql += "where ";
             }
-            param.put("goodsName", searchParam.getGoodsName() + "%");
+            param.put("goodsName", "%" + searchParam.getGoodsName() + "%");
             sql += "goodsName like :goodsName";
         }
         if (searchParam.getName() != null && !searchParam.getName().isEmpty()) {

@@ -7,7 +7,7 @@ public class StatictisModel {
 
     private double tips;
 
-    private int amounts;
+    private long amounts;
 
     private double countPrices;
 
