@@ -31,4 +31,12 @@ public class SearchParam {
     private int offset = 0;
 
     private int limit = 10;
+
+    private long id = 0;
+
+    private int isPay = -1;
+
+    private int isSend = -1;
+
+    private String sort = "asc";
 }

@@ -1,6 +1,7 @@
 package com.example.demo.dao;
 
 import com.example.demo.mode.GoodsRecord;
+import com.example.demo.mode.StatictisModel;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -34,23 +35,28 @@ public class PGoodsRecordHibernateDao {
         Session session = sessionFactory.openSession();
 
         System.out.println(sql);
-        Query query = null;
-        try {
-            Method createQuery = session.getClass().getMethod("createQuery", String.class);
-            query = (Query) createQuery.invoke(session, sql);
+        Query query = session.createQuery(sql);
 
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
         for (String key: param.keySet()) {
             query.setParameter(key, param.get(key));
         }
         query.setMaxResults(limit);
         query.setFirstResult(offset);
+        List<GoodsRecord> list = query.list();
+        session.close();
+        return list;
+    }
+
+    public List<GoodsRecord> queryByLastId(String sql, Map<String, Object> param, int limit) {
+        Session session = sessionFactory.openSession();
+
+        System.out.println(sql);
+        Query query = session.createQuery(sql);
+
+        for (String key: param.keySet()) {
+            query.setParameter(key, param.get(key));
+        }
+        query.setMaxResults(limit);
         List<GoodsRecord> list = query.list();
         session.close();
         return list;
@@ -81,6 +87,26 @@ public class PGoodsRecordHibernateDao {
         int count = ((Number)query.uniqueResult()).intValue();
         session.close();
         return count;
+    }
+
+    public StatictisModel statictisGoods(String sql, Map<String, Object> param) {
+        Session session = sessionFactory.openSession();
+        Query query = session.createQuery(sql);
+        for (String key: param.keySet()) {
+            query.setParameter(key, param.get(key));
+        }
+        System.out.println("================" + query.toString());
+        List<Object[]> results = query.list();
+        StatictisModel statictisModel = new StatictisModel();
+        if (results.size() != 0) {
+            Object[] res = results.get(0);
+            statictisModel.setTips((Double)res[0]);
+            statictisModel.setAmounts((Integer) res[1]);
+            statictisModel.setCountPrices((Double)res[2]);
+            statictisModel.setOldPrices((Double)res[3]);
+        }
+        session.close();
+        return statictisModel;
     }
 
     public void update(GoodsRecord goodsRecord) {

@@ -2,7 +2,11 @@ package com.example.demo.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.dao.PGoodsRecordHibernateDao;
+import com.example.demo.entity.OperationPlatform;
+import com.example.demo.entity.OperationType;
+import com.example.demo.fragment.OperationFragment;
 import com.example.demo.mode.GoodsRecord;
+import com.example.demo.mode.StatictisModel;
 import com.example.demo.stuct.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,9 @@ public class OperationController {
 
     @Autowired
     private PGoodsRecordHibernateDao pGoodsRecordHibernateDao;
+
+    @Autowired
+    private OperationFragment operationFragment;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -59,46 +66,25 @@ public class OperationController {
     public List<GoodsRecord> search(@RequestBody LYopRequest lYopRequest) {
         SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
         if (searchParam != null) {
-            String sql = "FROM GoodsRecord ";
             Map<String, Object> param = new HashMap<>();
-            if (searchParam.getGoodsName() != null && !searchParam.getGoodsName().isEmpty()) {
-                if (param.isEmpty()) {
-                    sql += "where ";
-                }
-                param.put("goodsName", searchParam.getGoodsName() + "%");
-                sql += "goodsName like :goodsName";
-            }
-            if (searchParam.getName() != null && !searchParam.getName().isEmpty()) {
-                if (param.isEmpty()) {
-                    sql += "where ";
-                } else {
-                    sql += " and ";
-                }
-                param.put("name", "%" + searchParam.getName() + "%");
-                sql += "name like :name";
-            }
-            if (searchParam.getStartTime() != null) {
-                if (param.isEmpty()) {
-                    sql += "where ";
-                } else {
-                    sql += " and ";
-                }
-                param.put("startTime", searchParam.getStartTime());
-                sql += "createAt >= :startTime";
-            }
-            if (searchParam.getEndTime() != null) {
-                if (param.isEmpty()) {
-                    sql += "where ";
-                } else {
-                    sql += " and ";
-                }
-                param.put("endTime", searchParam.getEndTime());
-                sql += "createAt <= :endTime";
-            }
-            sql += " order by createAt desc";
+            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.SELECT);
+
             System.out.println(sql);
             System.out.println(JSONObject.toJSON(param));
             return pGoodsRecordHibernateDao.query(sql, param, searchParam.getOffset(), searchParam.getLimit());
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    @RequestMapping(value = "/search/app",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public List<GoodsRecord> searchApp(@RequestBody LYopRequest lYopRequest) {
+        SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
+        if (searchParam != null) {
+            Map<String, Object> param = new HashMap<>();
+            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.APP, OperationType.SELECT);
+            System.out.println(sql);
+            System.out.println(JSONObject.toJSON(param));
+            return pGoodsRecordHibernateDao.queryByLastId(sql, param, searchParam.getLimit());
         }
         return Collections.EMPTY_LIST;
     }
@@ -108,48 +94,27 @@ public class OperationController {
         System.out.println("search++++++++++++++++++++++++");
         SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
         if (searchParam != null) {
-            String sql = "SELECT COUNT(1) FROM GoodsRecord ";
             Map<String, Object> param = new HashMap<>();
-            if (searchParam.getGoodsName() != null && !searchParam.getGoodsName().isEmpty()) {
-                if (param.isEmpty()) {
-                    sql += "where ";
-                }
-                param.put("goodsName", searchParam.getGoodsName() + "%");
-                sql += "goodsName like :goodsName";
-            }
-            if (searchParam.getName() != null && !searchParam.getName().isEmpty()) {
-                if (param.isEmpty()) {
-                    sql += "where ";
-                } else {
-                    sql += " and ";
-                }
-                param.put("name", "%" + searchParam.getName() + "%");
-                sql += "name like :name";
-            }
-            if (searchParam.getStartTime() != null) {
-                if (param.isEmpty()) {
-                    sql += "where ";
-                } else {
-                    sql += " and ";
-                }
-                param.put("startTime", searchParam.getStartTime());
-                sql += "createAt >= :startTime";
-            }
-            if (searchParam.getEndTime() != null) {
-                if (param.isEmpty()) {
-                    sql += "where ";
-                } else {
-                    sql += " and ";
-                }
-                param.put("endTime", searchParam.getEndTime());
-                sql += "createAt <= :endTime";
-            }
-            sql += " order by createAt desc";
+            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.COUNT);
             System.out.println("count+++++++++" + sql);
             System.out.println("count+++++++++" + JSONObject.toJSON(param));
             return pGoodsRecordHibernateDao.count(sql, param, searchParam.getOffset(), searchParam.getLimit());
         }
         return 0;
+    }
+
+    @RequestMapping(value = "/search/statictis",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public StatictisModel searchStatictis(@RequestBody LYopRequest lYopRequest) {
+        System.out.println("search++++++++++++++++++++++++");
+        SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
+        if (searchParam != null) {
+            Map<String, Object> param = new HashMap<>();
+            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.COUNT);
+            System.out.println("count+++++++++" + sql);
+            System.out.println("count+++++++++" + JSONObject.toJSON(param));
+            return pGoodsRecordHibernateDao.statictisGoods(sql, param);
+        }
+        return new StatictisModel();
     }
 
     @RequestMapping(value = "/update",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
