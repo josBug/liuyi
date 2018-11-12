@@ -156,7 +156,7 @@ public class OperationController {
         return responseDemo;
     }
 
-    @RequestMapping(value = "/update/operator",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    @RequestMapping(value = "/update/batch/operator",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo updateBatchOperator(@RequestBody LYopRequest lYopRequest) {
         BatchOperator batchOperator = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(BatchOperator.class));
         ResponseDemo responseDemo = new ResponseDemo();

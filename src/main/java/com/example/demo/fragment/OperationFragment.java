@@ -91,13 +91,18 @@ public class OperationFragment {
     }
 
     public String constructBatchSql(BatchType batchType) {
-        String sql = "UPDATE GoodsRecord SET ";
+        StringBuffer sql = new StringBuffer("UPDATE GoodsRecord SET ");
         if (batchType == BatchType.PAY) {
-            sql += "isPay = :value ";
+            sql.append("isPay = :value ");
         } else if (batchType == BatchType.SEND) {
-            sql += "send = :value ";
+            sql.append("send = :value ");
         }
-        sql += "WHERE id in (:ids)";
-        return sql;
+        sql.append("WHERE id in (:ids) ");
+        if (batchType == BatchType.PAY) {
+            sql.append("and isPay != :value ");
+        } else if (batchType == BatchType.SEND) {
+            sql.append("and send != :value ");
+        }
+        return sql.toString();
     }
 }
