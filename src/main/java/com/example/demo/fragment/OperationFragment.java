@@ -2,6 +2,7 @@ package com.example.demo.fragment;
 
 import com.example.demo.entity.OperationPlatform;
 import com.example.demo.entity.OperationType;
+import com.example.demo.stuct.BatchType;
 import com.example.demo.stuct.SearchParam;
 import org.springframework.stereotype.Component;
 
@@ -86,6 +87,17 @@ public class OperationFragment {
             }
         }
         sql += " order by createAt " + searchParam.getSort();
+        return sql;
+    }
+
+    public String constructBatchSql(BatchType batchType) {
+        String sql = "UPDATE GoodsRecord SET ";
+        if (batchType == BatchType.PAY) {
+            sql += "isPay = :value ";
+        } else if (batchType == BatchType.SEND) {
+            sql += "send = :value ";
+        }
+        sql += "WHERE id in (:ids)";
         return sql;
     }
 }

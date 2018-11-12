@@ -122,10 +122,47 @@ public class OperationController {
         OperationRequest operationRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(OperationRequest.class));
         ResponseDemo responseDemo = new ResponseDemo();
         if (operationRequest != null) {
-            GoodsRecord goodsRecord = operationRequest.getGoodsRecord();
+            GoodsRecord goodsRecord = operationRequest.getGoodsRecords().get(0);
             goodsRecord.setCountPrice(new BigDecimal((goodsRecord.getOldPrice() + goodsRecord.getTip()) * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
             goodsRecord.setUserName(lYopRequest.getUserName());
             pGoodsRecordHibernateDao.update(goodsRecord);
+            responseDemo.setCode(200);
+            responseDemo.setRessult("success");
+            return responseDemo;
+        }
+        responseDemo.setCode(500);
+        responseDemo.setRessult("failed");
+        return responseDemo;
+    }
+
+
+    @RequestMapping(value = "/update/batch",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public ResponseDemo updateBatch(@RequestBody LYopRequest lYopRequest) {
+        OperationRequest operationRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(OperationRequest.class));
+        ResponseDemo responseDemo = new ResponseDemo();
+        if (operationRequest != null) {
+            List<GoodsRecord> goodsRecords = operationRequest.getGoodsRecords();
+            goodsRecords.stream().forEach(goodsRecord -> {
+                goodsRecord.setCountPrice(new BigDecimal((goodsRecord.getOldPrice() + goodsRecord.getTip()) * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                goodsRecord.setUserName(lYopRequest.getUserName());
+                pGoodsRecordHibernateDao.update(goodsRecord);
+            });
+            responseDemo.setCode(200);
+            responseDemo.setRessult("success");
+            return responseDemo;
+        }
+        responseDemo.setCode(500);
+        responseDemo.setRessult("failed");
+        return responseDemo;
+    }
+
+    @RequestMapping(value = "/update/operator",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public ResponseDemo updateBatchOperator(@RequestBody LYopRequest lYopRequest) {
+        BatchOperator batchOperator = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(BatchOperator.class));
+        ResponseDemo responseDemo = new ResponseDemo();
+        if (batchOperator != null) {
+            String sql = operationFragment.constructBatchSql(batchOperator.getBatchType());
+            pGoodsRecordHibernateDao.updateBatch(batchOperator.getIds(), batchOperator.getValue(), sql);
             responseDemo.setCode(200);
             responseDemo.setRessult("success");
             return responseDemo;
@@ -140,7 +177,7 @@ public class OperationController {
         OperationRequest operationRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(OperationRequest.class));
         ResponseDemo responseDemo = new ResponseDemo();
         if (operationRequest != null) {
-            GoodsRecord goodsRecord = operationRequest.getGoodsRecord();
+            GoodsRecord goodsRecord = operationRequest.getGoodsRecords().get(0);
             pGoodsRecordHibernateDao.delete(goodsRecord);
             responseDemo.setCode(200);
             responseDemo.setRessult("success");

@@ -127,6 +127,22 @@ public class PGoodsRecordHibernateDao {
         session.close();
     }
 
+    public void updateBatch(List<Long> ids, int value, String sql) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        try {
+            Query query = session.createQuery(sql);
+            query.setParameter("value", value);
+            query.setParameter("ids", ids);
+            query.executeUpdate();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
+
+        session.getTransaction().commit();
+        session.close();
+    }
+
     public void delete(GoodsRecord goodsRecord) {
         Session session = sessionFactory.openSession();
         session.delete(goodsRecord);
