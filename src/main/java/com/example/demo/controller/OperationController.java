@@ -172,6 +172,22 @@ public class OperationController {
         return responseDemo;
     }
 
+    @RequestMapping(value = "/update/express",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public ResponseDemo updateExpress(@RequestBody LYopRequest lYopRequest) {
+        ExpressRequest expressRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(ExpressRequest.class));
+        ResponseDemo responseDemo = new ResponseDemo();
+        if (expressRequest != null) {
+            String sql = operationFragment.constructExpress();
+            pGoodsRecordHibernateDao.updateExpress(expressRequest.getId(), expressRequest.getExpressCode(), sql);
+            responseDemo.setCode(200);
+            responseDemo.setRessult("success");
+            return responseDemo;
+        }
+        responseDemo.setCode(500);
+        responseDemo.setRessult("failed");
+        return responseDemo;
+    }
+
     @RequestMapping(value = "/delete",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo delete(@RequestBody LYopRequest lYopRequest) {
         OperationRequest operationRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(OperationRequest.class));

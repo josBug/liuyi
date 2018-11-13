@@ -59,6 +59,9 @@ public class GoodsRecord {
     @Column(name = "source")
     private String source;
 
+    @Column(name = "express_code")
+    private String expressCode;
+
     @Column(name="created_at", insertable = false, updatable = false)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
