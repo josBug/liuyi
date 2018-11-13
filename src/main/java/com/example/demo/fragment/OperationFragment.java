@@ -107,7 +107,7 @@ public class OperationFragment {
     }
 
     public String constructExpress() {
-        StringBuffer sql = new StringBuffer("UPDATE GoodsRecord SET expressCode = :expressCode WHERE id = :id");
+        StringBuffer sql = new StringBuffer("UPDATE GoodsRecord SET expressCode = :expressCode WHERE id in (:ids)");
         return sql.toString();
     }
 }

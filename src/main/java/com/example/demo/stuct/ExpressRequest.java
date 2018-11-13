@@ -2,10 +2,12 @@ package com.example.demo.stuct;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class ExpressRequest {
 
-    private long id;
+    private List<Long> ids;
 
     private String expressCode;
 }

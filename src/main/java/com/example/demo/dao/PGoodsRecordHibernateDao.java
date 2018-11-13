@@ -143,12 +143,12 @@ public class PGoodsRecordHibernateDao {
         session.close();
     }
 
-    public void updateExpress(Long id, String expressCode, String sql) {
+    public void updateExpress(List<Long> ids, String expressCode, String sql) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         try {
             Query query = session.createQuery(sql);
-            query.setParameter("id", id);
+            query.setParameter("ids", ids);
             query.setParameter("expressCode", expressCode);
             query.executeUpdate();
         } catch (Exception e) {
