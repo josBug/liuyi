@@ -188,13 +188,12 @@ public class OperationController {
         return responseDemo;
     }
 
-    @RequestMapping(value = "/delete",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    @RequestMapping(value = "/delete/batch",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo delete(@RequestBody LYopRequest lYopRequest) {
-        OperationRequest operationRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(OperationRequest.class));
+        BatchOperator batchOperator = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(BatchOperator.class));
         ResponseDemo responseDemo = new ResponseDemo();
-        if (operationRequest != null) {
-            GoodsRecord goodsRecord = operationRequest.getGoodsRecords().get(0);
-            pGoodsRecordHibernateDao.delete(goodsRecord);
+        if (batchOperator != null) {
+            pGoodsRecordHibernateDao.deleteV2(batchOperator.getIds());
             responseDemo.setCode(200);
             responseDemo.setRessult("success");
             return responseDemo;

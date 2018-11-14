@@ -70,7 +70,7 @@ public class PGoodsRecordHibernateDao {
             session.flush();
             session.evict(goodsRecord);
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            return;
         }
 
         session.getTransaction().commit();
@@ -120,7 +120,7 @@ public class PGoodsRecordHibernateDao {
             session.flush();
             session.evict(goodsRecord);
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            return;
         }
 
         session.getTransaction().commit();
@@ -136,7 +136,7 @@ public class PGoodsRecordHibernateDao {
             query.setParameter("ids", ids);
             query.executeUpdate();
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            return;
         }
 
         session.getTransaction().commit();
@@ -152,7 +152,7 @@ public class PGoodsRecordHibernateDao {
             query.setParameter("expressCode", expressCode);
             query.executeUpdate();
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            return;
         }
 
         session.getTransaction().commit();
@@ -161,7 +161,24 @@ public class PGoodsRecordHibernateDao {
 
     public void delete(GoodsRecord goodsRecord) {
         Session session = sessionFactory.openSession();
+        session.beginTransaction();
         session.delete(goodsRecord);
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    public void deleteV2(List<Long> ids) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        try {
+            Query query = session.createQuery("DELETE FROM GoodsRecord WHRE id in (:ids)");
+            query.setParameter("ids", ids);
+            query.executeUpdate();
+        }catch (Exception e) {
+            return;
+        }
+
+        session.getTransaction().commit();
         session.close();
     }
 }
