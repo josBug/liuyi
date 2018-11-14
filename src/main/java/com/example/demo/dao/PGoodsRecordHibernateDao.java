@@ -171,7 +171,7 @@ public class PGoodsRecordHibernateDao {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         try {
-            Query query = session.createQuery("DELETE FROM GoodsRecord WHRE id in (:ids)");
+            Query query = session.createQuery("DELETE FROM GoodsRecord WHERE id in (:ids)");
             query.setParameter("ids", ids);
             query.executeUpdate();
         }catch (Exception e) {
