@@ -19,7 +19,7 @@ public class OperationFragment {
         } else if (operationType == OperationType.SELECT){
             sql = "FROM GoodsRecord ";
         } else if (operationType == OperationType.SELECT_SUM){
-            sql = "SELECT SUM(tip) AS tips,SUM(amount) AS amounts,SUM(countPrice) AS countPrices,SUM(oldPrice) AS oldPrices FROM GoodsRecord ";
+            sql = "SELECT SUM(tip*amount) AS tips,SUM(amount) AS amounts,SUM(countPrice) AS countPrices,SUM(oldPrice*amount) AS oldPrices FROM GoodsRecord ";
         }
         if (searchParam.getGoodsName() != null && !searchParam.getGoodsName().isEmpty()) {
             if (param.isEmpty()) {
