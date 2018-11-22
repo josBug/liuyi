@@ -135,7 +135,7 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.6.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+		 <!--https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core-->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
