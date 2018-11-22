@@ -7,11 +7,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +44,16 @@ public class PGoodsRecordHibernateDao {
         List<GoodsRecord> list = query.list();
         session.close();
         return list;
+    }
+
+    public GoodsRecord getById(Long id) {
+        Session session = sessionFactory.openSession();
+
+        Query query = session.createQuery("FROM GoodsRecord WHERE id = :id");
+        query.setParameter("id", id);
+        List<GoodsRecord> goodsRecords = query.list();
+        session.close();
+        return CollectionUtils.isEmpty(goodsRecords) ? null : goodsRecords.get(0);
     }
 
     public List<GoodsRecord> queryByLastId(String sql, Map<String, Object> param, int limit) {
