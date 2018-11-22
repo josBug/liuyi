@@ -125,7 +125,19 @@ public class OperationController {
             GoodsRecord goodsRecord = operationRequest.getGoodsRecords().get(0);
             goodsRecord.setCountPrice(new BigDecimal((goodsRecord.getOldPrice() + goodsRecord.getTip()) * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
             goodsRecord.setUserName(lYopRequest.getUserName());
-            pGoodsRecordHibernateDao.update(goodsRecord);
+
+            GoodsRecord oldGoodsRecord = pGoodsRecordHibernateDao.getById(goodsRecord.getId());
+            oldGoodsRecord.setUserName(goodsRecord.getUserName());
+            oldGoodsRecord.setRemark(goodsRecord.getRemark());
+            oldGoodsRecord.setTip(goodsRecord.getTip());
+            oldGoodsRecord.setOldPrice(goodsRecord.getOldPrice());
+            oldGoodsRecord.setName(goodsRecord.getName());
+            oldGoodsRecord.setCountPrice(goodsRecord.getCountPrice());
+            oldGoodsRecord.setColor(goodsRecord.getColor());
+            oldGoodsRecord.setCode(goodsRecord.getCode());
+            oldGoodsRecord.setGoodsName(goodsRecord.getGoodsName());
+            oldGoodsRecord.setAmount(goodsRecord.getAmount());
+            pGoodsRecordHibernateDao.update(oldGoodsRecord);
             responseDemo.setCode(200);
             responseDemo.setRessult("success");
             return responseDemo;
