@@ -22,4 +22,6 @@ public class Message {
     private String remark;
 
     private int send;
+
+    private int isPay;
 }
