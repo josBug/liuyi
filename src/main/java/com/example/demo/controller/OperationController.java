@@ -49,7 +49,7 @@ public class OperationController {
                 goodsRecord.setTip(new BigDecimal(message.getTip()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 goodsRecord.setRemark(message.getRemark());
                 goodsRecord.setUserName(lYopRequest.getUserName());
-                goodsRecord.setIsPay(0);
+                goodsRecord.setIsPay(message.getIsPay());
                 pGoodsRecordHibernateDao.save(goodsRecord);
 
             });
