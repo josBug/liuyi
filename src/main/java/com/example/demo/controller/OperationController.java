@@ -50,6 +50,8 @@ public class OperationController {
                 goodsRecord.setRemark(message.getRemark());
                 goodsRecord.setUserName(lYopRequest.getUserName());
                 goodsRecord.setIsPay(message.getIsPay());
+                goodsRecord.setExpressCode("");
+                goodsRecord.setSource("爱库存");
                 pGoodsRecordHibernateDao.save(goodsRecord);
 
             });
