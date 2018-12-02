@@ -110,4 +110,8 @@ public class OperationFragment {
         StringBuffer sql = new StringBuffer("UPDATE GoodsRecord SET expressCode = :expressCode WHERE id in (:ids)");
         return sql.toString();
     }
+
+    public String constructMonthStatistic() {
+        return new StringBuffer("SELECT SUM(amount) as amounts,SUM(oldPrice) as oldPrices SET expressCode = :expressCode WHERE id in (:ids)").toString();
+    }
 }

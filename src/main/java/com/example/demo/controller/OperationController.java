@@ -216,4 +216,12 @@ public class OperationController {
         responseDemo.setRessult("failed");
         return responseDemo;
     }
+
+    @RequestMapping(value = "/month/statistic",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public ResponseDemo currentMonthStatistic(@RequestBody LYopRequest lYopRequest) {
+        ResponseDemo responseDemo = new ResponseDemo();
+        responseDemo.setCode(200);
+        responseDemo.setRessult("success");
+        return responseDemo;
+    }
 }
