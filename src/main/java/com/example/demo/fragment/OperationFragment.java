@@ -12,7 +12,7 @@ import java.util.Map;
 @Component
 public class OperationFragment {
 
-    public String constructSql(SearchParam searchParam, Map<String, Object> param, OperationPlatform operationPlatform, OperationType operationType) {
+    public String constructSql(SearchParam searchParam, Map<String, Object> param, OperationPlatform operationPlatform, OperationType operationType, Long userId) throws Exception {
         String sql = null;
         if (operationType == OperationType.COUNT) {
             sql = "SELECT COUNT(1) FROM GoodsRecord ";
@@ -21,6 +21,7 @@ public class OperationFragment {
         } else if (operationType == OperationType.SELECT_SUM){
             sql = "SELECT SUM(tip*amount) AS tips,SUM(amount) AS amounts,SUM(countPrice) AS countPrices,SUM(oldPrice*amount) AS oldPrices FROM GoodsRecord ";
         }
+        checkParam(searchParam);
         if (searchParam.getGoodsName() != null && !searchParam.getGoodsName().isEmpty()) {
             if (param.isEmpty()) {
                 sql += "where ";
@@ -63,6 +64,15 @@ public class OperationFragment {
             }
             param.put("startTime", searchParam.getStartTime());
             sql += "createAt >= :startTime";
+        }
+        if (userId != null) {
+            if (param.isEmpty()) {
+                sql += "where ";
+            } else {
+                sql += " and ";
+            }
+            param.put("userId", userId);
+            sql += "userId = :userId";
         }
         if (searchParam.getEndTime() != null) {
             if (param.isEmpty()) {
@@ -112,6 +122,20 @@ public class OperationFragment {
     }
 
     public String constructMonthStatistic() {
-        return new StringBuffer("SELECT SUM(amount) as amounts,SUM(oldPrice) as oldPrices SET expressCode = :expressCode WHERE id in (:ids)").toString();
+        return new StringBuffer("SELECT SUM(amount) as amounts,SUM(oldPrice) as oldPrices, SUM(tip) as tips, SUM(countPrice) as countPrices WHERE userId = :userId AND createAt >= :startTime AND createAt <= :endTime").toString();
+    }
+
+    private void checkParam(SearchParam searchParam) throws Exception{
+        if (searchParam.getGoodsName().indexOf("#") != -1) {
+            throw new Exception("包含非法字符");
+        }
+
+        if (searchParam.getName().indexOf("#") != -1) {
+            throw new Exception("包含非法字符");
+        }
+
+        if (searchParam.getSort().indexOf("#") != -1) {
+            throw new Exception("包含非法字符");
+        }
     }
 }

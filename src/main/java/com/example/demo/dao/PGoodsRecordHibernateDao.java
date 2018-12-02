@@ -2,6 +2,7 @@ package com.example.demo.dao;
 
 import com.example.demo.mode.GoodsRecord;
 import com.example.demo.mode.StatictisModel;
+import com.example.demo.stuct.BizCurrentMonth;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -190,4 +192,31 @@ public class PGoodsRecordHibernateDao {
         session.getTransaction().commit();
         session.close();
     }
+
+    public BizCurrentMonth getMonthStatistic(String sql, Long userId) {
+        Session session = sessionFactory.openSession();
+        Query query = session.createQuery(sql);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now.minusDays(now.getDayOfMonth() - 1).withHour(0).withMinute(0).withSecond(0);
+        query.setParameter("userId", userId);
+        query.setParameter("startTime", startTime);
+        query.setParameter("endTime", now);
+
+        System.out.println("================" + query.toString());
+        List<Object[]> results = query.list();
+        BizCurrentMonth bizCurrentMonth = new BizCurrentMonth();
+        if (results.size() != 0) {
+            Object[] res = results.get(0);
+            if (res[0] == null) {
+                return bizCurrentMonth;
+            }
+            bizCurrentMonth.setAmount((Integer) res[0]);
+            bizCurrentMonth.setOldPrice((Double) res[1]);
+            bizCurrentMonth.setTips((Double)res[2]);
+            bizCurrentMonth.setCountPrice((Double)res[3]);
+        }
+        session.close();
+        return bizCurrentMonth;
+    }
+
 }

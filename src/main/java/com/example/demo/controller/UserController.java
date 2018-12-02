@@ -94,35 +94,35 @@ public class UserController {
         return responseDemo;
     }
 
-    @RequestMapping(value = "/check/status",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public ResponseDemo checkStatus(@RequestBody LYopRequest lYopRequest) {
-        CheckUserInfo checkUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(CheckUserInfo.class));
-        ResponseDemo responseDemo = new ResponseDemo();
-        if (checkUserInfo != null) {
-            if (checkUserInfo.getKsid() == null
-                    || checkUserInfo.getKsid().isEmpty()
-                    || checkUserInfo.getUserName() == null
-                    || checkUserInfo.getUserName().isEmpty()) {
-                responseDemo.setCode(500);
-                responseDemo.setRessult("failed");
-                return responseDemo;
-            }
-
-            boolean status = pUserInfoHibernateDao.checkLoginStatus(checkUserInfo.getUserName(), checkUserInfo.getKsid());
-            if (status) {
-                responseDemo.setCode(200);
-                responseDemo.setRessult("success");
-            } else {
-                responseDemo.setCode(500);
-                responseDemo.setRessult("failed");
-            }
-
-            return responseDemo;
-        }
-        responseDemo.setCode(500);
-        responseDemo.setRessult("failed");
-        return responseDemo;
-    }
+//    @RequestMapping(value = "/check/status",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+//    public ResponseDemo checkStatus(@RequestBody LYopRequest lYopRequest) {
+//        CheckUserInfo checkUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(CheckUserInfo.class));
+//        ResponseDemo responseDemo = new ResponseDemo();
+//        if (checkUserInfo != null) {
+//            if (checkUserInfo.getKsid() == null
+//                    || checkUserInfo.getKsid().isEmpty()
+//                    || checkUserInfo.getUserName() == null
+//                    || checkUserInfo.getUserName().isEmpty()) {
+//                responseDemo.setCode(500);
+//                responseDemo.setRessult("failed");
+//                return responseDemo;
+//            }
+//
+//            boolean status = pUserInfoHibernateDao.checkLoginStatus(checkUserInfo.getUserName(), checkUserInfo.getKsid());
+//            if (status) {
+//                responseDemo.setCode(200);
+//                responseDemo.setRessult("success");
+//            } else {
+//                responseDemo.setCode(500);
+//                responseDemo.setRessult("failed");
+//            }
+//
+//            return responseDemo;
+//        }
+//        responseDemo.setCode(500);
+//        responseDemo.setRessult("failed");
+//        return responseDemo;
+//    }
 
     @RequestMapping(value = "/loginout",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo loginout(@RequestBody LYopRequest lYopRequest) {

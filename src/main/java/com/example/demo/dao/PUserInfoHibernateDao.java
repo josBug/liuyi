@@ -50,7 +50,7 @@ public class PUserInfoHibernateDao {
         String ksid = uuid.toString();
         UserInfo userInfo = list.get(0);
         userInfo.setSession(ksid);
-        userInfo.setStatus(0);
+        userInfo.setStatus(1);
 
         session.beginTransaction();
         session.update(userInfo);
@@ -60,7 +60,7 @@ public class PUserInfoHibernateDao {
         return ksid;
     }
 
-    public String checkKsid(String ksid) {
+    public UserInfo checkKsid(String ksid) {
         Session session = sessionFactory.openSession();
 
         Query query = session.createQuery("FROM UserInfo where session = :ksid");
@@ -73,7 +73,7 @@ public class PUserInfoHibernateDao {
         }
 
         session.close();
-        return list.get(0).getUserName();
+        return list.get(0);
     }
 
     public boolean checkLoginStatus(String userName, String ksid) {
