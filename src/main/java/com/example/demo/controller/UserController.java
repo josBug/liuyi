@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dao.PUserInfoHibernateDao;
+import com.example.demo.mode.UserInfo;
 import com.example.demo.stuct.CheckUserInfo;
 import com.example.demo.stuct.LYopRequest;
 import com.example.demo.stuct.ResponseDemo;
@@ -152,8 +153,14 @@ public class UserController {
     @RequestMapping(value = "/send/code",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo sendEmailCode(@RequestBody LYopRequest lYopRequest) {
         CheckUserInfo checkUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(CheckUserInfo.class));
-        Properties properties = new Properties();
         ResponseDemo responseDemo = new ResponseDemo();
+        UserInfo userInfoByPasswd = pUserInfoHibernateDao.getUserInfoByPasswd(checkUserInfo.getUserName(), checkUserInfo.getPasswd());
+        if (userInfoByPasswd == null) {
+            responseDemo.setCode(404);
+            responseDemo.setRessult("failed");
+            return responseDemo;
+        }
+        Properties properties = new Properties();
         properties.setProperty("mail.smtp.auth", "true");
         properties.setProperty("mail.transport.protocol", "smtp");
         properties.setProperty("mail.smtp.host", "smtp.sina.cn");
@@ -162,12 +169,12 @@ public class UserController {
         session.setDebug(true);
         try {
             String emailCode = PassWordUtil.createPassWord(4);
-            Message msg = getMimeMessage(session, lYopRequest.getEmail(), emailCode);
+            Message msg = getMimeMessage(session, userInfoByPasswd.getEmail(), emailCode);
             Transport transport = session.getTransport();
             transport.connect("dlv2014@sina.cn", "pm138319");
             transport.sendMessage(msg,msg.getAllRecipients());
             transport.close();
-            pUserInfoHibernateDao.updateEmailCode(checkUserInfo.getUserName(), checkUserInfo.getPasswd(), emailCode);
+            pUserInfoHibernateDao.updateEmailCode(userInfoByPasswd.getUserName(), userInfoByPasswd.getPasswd(), emailCode);
         } catch (Exception e) {
             e.printStackTrace();
         }

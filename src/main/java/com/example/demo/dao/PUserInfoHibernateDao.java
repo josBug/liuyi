@@ -180,4 +180,21 @@ public class PUserInfoHibernateDao {
         session.close();
     }
 
+    public UserInfo getUserInfoByPasswd(String userName, String passwd) {
+        Session session = sessionFactory.openSession();
+
+        Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
+        query.setParameter("userName", userName);
+        query.setParameter("passwd", passwd);
+        query.setMaxResults(1);
+        List<UserInfo> list = query.list();
+        if (list.size() != 1) {
+            return null;
+        }
+
+        UserInfo userInfo = list.get(0);
+        session.close();
+        return userInfo;
+    }
+
 }
