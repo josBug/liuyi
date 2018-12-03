@@ -38,10 +38,8 @@ public class PUserInfoHibernateDao {
         query.setParameter("userName", userName);
         query.setParameter("passwd", passwd);
         query.setParameter("emailCode", emailCode);
-        query.setMaxResults(1000);
+        query.setMaxResults(1);
         List<UserInfo> list = query.list();
-
-
         if (list.size() != 1) {
             return null;
         }
@@ -82,7 +80,7 @@ public class PUserInfoHibernateDao {
         Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
         query.setParameter("userName", userName);
         query.setParameter("ksid", ksid);
-        query.setMaxResults(1000);
+        query.setMaxResults(1);
         List<UserInfo> list = query.list();
 
         if (list.size() != 1) {
@@ -110,9 +108,8 @@ public class PUserInfoHibernateDao {
         Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
         query.setParameter("userName", userName);
         query.setParameter("ksid", ksid);
-        query.setMaxResults(1000);
+        query.setMaxResults(1);
         List<UserInfo> list = query.list();
-
         if (list.size() != 1) {
             return;
         }
@@ -124,6 +121,7 @@ public class PUserInfoHibernateDao {
 
         userInfo.setSession("");
         userInfo.setStatus(0);
+        userInfo.setEmailCode("");
 
         session.beginTransaction();
         session.update(userInfo);
@@ -135,14 +133,10 @@ public class PUserInfoHibernateDao {
     public boolean registryUser(String userName, String passwd, String email) {
         Session session = sessionFactory.openSession();
 
-        session.beginTransaction();
         Query query = session.createQuery("FROM UserInfo where userName = :userName");
         query.setParameter("userName", userName);
         query.setMaxResults(1000);
         List<UserInfo> list = query.list();
-
-        session.getTransaction().commit();
-
         if (list.size() != 0) {
             return false;
         }
@@ -170,9 +164,8 @@ public class PUserInfoHibernateDao {
         Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
         query.setParameter("userName", userName);
         query.setParameter("passwd", passwd);
-        query.setMaxResults(1000);
+        query.setMaxResults(1);
         List<UserInfo> list = query.list();
-
         if (list.size() != 1) {
             return;
         }
@@ -186,4 +179,5 @@ public class PUserInfoHibernateDao {
 
         session.close();
     }
+
 }

@@ -1,4 +1,4 @@
-package com.example.demo.mode;
+package com.example.demo.stuct;
 
 import lombok.Data;
 

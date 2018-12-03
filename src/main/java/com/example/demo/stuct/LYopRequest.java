@@ -14,5 +14,7 @@ public class LYopRequest {
 
     private Long userId;
 
+    private String email;
+
     private Object object;
 }

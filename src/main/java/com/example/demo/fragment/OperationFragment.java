@@ -113,11 +113,12 @@ public class OperationFragment {
         } else if (batchType == BatchType.SEND) {
             sql.append("and send != :value ");
         }
+        sql.append("and userId = :userId");
         return sql.toString();
     }
 
     public String constructExpress() {
-        StringBuffer sql = new StringBuffer("UPDATE GoodsRecord SET expressCode = :expressCode WHERE id in (:ids)");
+        StringBuffer sql = new StringBuffer("UPDATE GoodsRecord SET expressCode = :expressCode WHERE id in (:ids) and userId = :userId");
         return sql.toString();
     }
 

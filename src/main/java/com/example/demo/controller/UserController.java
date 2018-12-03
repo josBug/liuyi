@@ -4,6 +4,7 @@ import com.example.demo.dao.PUserInfoHibernateDao;
 import com.example.demo.stuct.CheckUserInfo;
 import com.example.demo.stuct.LYopRequest;
 import com.example.demo.stuct.ResponseDemo;
+import com.example.demo.util.PassWordUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -150,6 +151,7 @@ public class UserController {
 
     @RequestMapping(value = "/send/code",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public ResponseDemo sendEmailCode(@RequestBody LYopRequest lYopRequest) {
+        CheckUserInfo checkUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(CheckUserInfo.class));
         Properties properties = new Properties();
         ResponseDemo responseDemo = new ResponseDemo();
         properties.setProperty("mail.smtp.auth", "true");
@@ -159,11 +161,13 @@ public class UserController {
         Session session = Session.getInstance(properties);
         session.setDebug(true);
         try {
-            Message msg = getMimeMessage(session);
+            String emailCode = PassWordUtil.createPassWord(4);
+            Message msg = getMimeMessage(session, lYopRequest.getEmail(), emailCode);
             Transport transport = session.getTransport();
             transport.connect("dlv2014@sina.cn", "pm138319");
             transport.sendMessage(msg,msg.getAllRecipients());
             transport.close();
+            pUserInfoHibernateDao.updateEmailCode(checkUserInfo.getUserName(), checkUserInfo.getPasswd(), emailCode);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,7 +176,7 @@ public class UserController {
         return responseDemo;
     }
 
-    private MimeMessage getMimeMessage(Session session) throws Exception{
+    private MimeMessage getMimeMessage(Session session, String email, String emailCode) throws Exception{
         //创建一封邮件的实例对象
         MimeMessage msg = new MimeMessage(session);
         //设置发件人地址
@@ -183,11 +187,11 @@ public class UserController {
          * MimeMessage.RecipientType.CC：抄送
          * MimeMessage.RecipientType.BCC：密送
          */
-        msg.setRecipient(MimeMessage.RecipientType.TO,new InternetAddress("775986641@qq.com"));
+        msg.setRecipient(MimeMessage.RecipientType.TO,new InternetAddress(email));
         //设置邮件主题
-        msg.setSubject("邮件主题","UTF-8");
+        msg.setSubject("简代邮箱验证码","UTF-8");
         //设置邮件正文
-        msg.setContent("简单的纯文本邮件！", "text/html;charset=UTF-8");
+        msg.setContent(emailCode, "text/html;charset=UTF-8");
         //设置邮件的发送时间,默认立即发送
         msg.setSentDate(new Date());
 

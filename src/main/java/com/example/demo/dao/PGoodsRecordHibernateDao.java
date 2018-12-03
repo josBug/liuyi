@@ -1,7 +1,7 @@
 package com.example.demo.dao;
 
 import com.example.demo.mode.GoodsRecord;
-import com.example.demo.mode.StatictisModel;
+import com.example.demo.stuct.StatictisModel;
 import com.example.demo.stuct.BizCurrentMonth;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -48,11 +48,12 @@ public class PGoodsRecordHibernateDao {
         return list;
     }
 
-    public GoodsRecord getById(Long id) {
+    public GoodsRecord getById(Long id, Long userId) {
         Session session = sessionFactory.openSession();
 
-        Query query = session.createQuery("FROM GoodsRecord WHERE id = :id");
+        Query query = session.createQuery("FROM GoodsRecord WHERE id = :id and userId = :userId");
         query.setParameter("id", id);
+        query.setParameter("userId", userId);
         List<GoodsRecord> goodsRecords = query.list();
         session.close();
         return CollectionUtils.isEmpty(goodsRecords) ? null : goodsRecords.get(0);
@@ -138,13 +139,14 @@ public class PGoodsRecordHibernateDao {
         session.close();
     }
 
-    public void updateBatch(List<Long> ids, int value, String sql) {
+    public void updateBatch(List<Long> ids, int value, String sql, Long userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         try {
             Query query = session.createQuery(sql);
             query.setParameter("value", value);
             query.setParameter("ids", ids);
+            query.setParameter("userId", userId);
             query.executeUpdate();
         } catch (Exception e) {
             return;
@@ -154,13 +156,14 @@ public class PGoodsRecordHibernateDao {
         session.close();
     }
 
-    public void updateExpress(List<Long> ids, String expressCode, String sql) {
+    public void updateExpress(List<Long> ids, String expressCode, String sql, Long userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         try {
             Query query = session.createQuery(sql);
             query.setParameter("ids", ids);
             query.setParameter("expressCode", expressCode);
+            query.setParameter("userId", userId);
             query.executeUpdate();
         } catch (Exception e) {
             return;
@@ -178,12 +181,13 @@ public class PGoodsRecordHibernateDao {
         session.close();
     }
 
-    public void deleteV2(List<Long> ids) {
+    public void deleteV2(List<Long> ids, Long userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         try {
-            Query query = session.createQuery("DELETE FROM GoodsRecord WHERE id in (:ids)");
+            Query query = session.createQuery("DELETE FROM GoodsRecord WHERE id in (:ids) and userId = :userId");
             query.setParameter("ids", ids);
+            query.setParameter("userId",userId);
             query.executeUpdate();
         }catch (Exception e) {
             return;
