@@ -66,7 +66,7 @@ public class UserController {
         ResponseDemo responseDemo = new ResponseDemo();
         responseDemo.setCode(500);
         responseDemo.setRessult("");
-        return null;
+        return responseDemo;
     }
 
     @RequestMapping(value = "/check/user",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
