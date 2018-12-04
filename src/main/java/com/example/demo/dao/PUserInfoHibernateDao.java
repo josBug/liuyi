@@ -63,7 +63,7 @@ public class PUserInfoHibernateDao {
 
         Query query = session.createQuery("FROM UserInfo where session = :ksid");
         query.setParameter("ksid", ksid);
-        query.setMaxResults(1000);
+        query.setMaxResults(1);
         List<UserInfo> list = query.list();
 
         if (list.isEmpty()) {
