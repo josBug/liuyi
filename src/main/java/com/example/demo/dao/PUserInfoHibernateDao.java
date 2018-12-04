@@ -135,7 +135,7 @@ public class PUserInfoHibernateDao {
 
         Query query = session.createQuery("FROM UserInfo where userName = :userName");
         query.setParameter("userName", userName);
-        query.setMaxResults(1000);
+        query.setMaxResults(1);
         List<UserInfo> list = query.list();
         if (list.size() != 0) {
             return false;
