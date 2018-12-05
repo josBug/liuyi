@@ -1,7 +1,8 @@
 package com.example.demo.dao;
 
 import com.example.demo.mode.GoodsRecord;
-import com.example.demo.mode.StatictisModel;
+import com.example.demo.stuct.StatictisModel;
+import com.example.demo.stuct.BizCurrentMonth;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -46,11 +48,12 @@ public class PGoodsRecordHibernateDao {
         return list;
     }
 
-    public GoodsRecord getById(Long id) {
+    public GoodsRecord getById(Long id, Long userId) {
         Session session = sessionFactory.openSession();
 
-        Query query = session.createQuery("FROM GoodsRecord WHERE id = :id");
+        Query query = session.createQuery("FROM GoodsRecord WHERE id = :id and userId = :userId");
         query.setParameter("id", id);
+        query.setParameter("userId", userId);
         List<GoodsRecord> goodsRecords = query.list();
         session.close();
         return CollectionUtils.isEmpty(goodsRecords) ? null : goodsRecords.get(0);
@@ -136,13 +139,14 @@ public class PGoodsRecordHibernateDao {
         session.close();
     }
 
-    public void updateBatch(List<Long> ids, int value, String sql) {
+    public void updateBatch(List<Long> ids, int value, String sql, Long userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         try {
             Query query = session.createQuery(sql);
             query.setParameter("value", value);
             query.setParameter("ids", ids);
+            query.setParameter("userId", userId);
             query.executeUpdate();
         } catch (Exception e) {
             return;
@@ -152,13 +156,14 @@ public class PGoodsRecordHibernateDao {
         session.close();
     }
 
-    public void updateExpress(List<Long> ids, String expressCode, String sql) {
+    public void updateExpress(List<Long> ids, String expressCode, String sql, Long userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         try {
             Query query = session.createQuery(sql);
             query.setParameter("ids", ids);
             query.setParameter("expressCode", expressCode);
+            query.setParameter("userId", userId);
             query.executeUpdate();
         } catch (Exception e) {
             return;
@@ -176,12 +181,13 @@ public class PGoodsRecordHibernateDao {
         session.close();
     }
 
-    public void deleteV2(List<Long> ids) {
+    public void deleteV2(List<Long> ids, Long userId) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         try {
-            Query query = session.createQuery("DELETE FROM GoodsRecord WHERE id in (:ids)");
+            Query query = session.createQuery("DELETE FROM GoodsRecord WHERE id in (:ids) and userId = :userId");
             query.setParameter("ids", ids);
+            query.setParameter("userId",userId);
             query.executeUpdate();
         }catch (Exception e) {
             return;
@@ -190,4 +196,31 @@ public class PGoodsRecordHibernateDao {
         session.getTransaction().commit();
         session.close();
     }
+
+    public BizCurrentMonth getMonthStatistic(String sql, Long userId) {
+        Session session = sessionFactory.openSession();
+        Query query = session.createQuery(sql);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now.minusDays(now.getDayOfMonth() - 1).withHour(0).withMinute(0).withSecond(0);
+        query.setParameter("userId", userId);
+        query.setParameter("startTime", startTime);
+        query.setParameter("endTime", now);
+
+        System.out.println("================" + query.toString());
+        List<Object[]> results = query.list();
+        BizCurrentMonth bizCurrentMonth = new BizCurrentMonth();
+        if (results.size() != 0) {
+            Object[] res = results.get(0);
+            if (res[0] == null) {
+                return bizCurrentMonth;
+            }
+            bizCurrentMonth.setAmount((Integer) res[0]);
+            bizCurrentMonth.setOldPrice((Double) res[1]);
+            bizCurrentMonth.setTips((Double)res[2]);
+            bizCurrentMonth.setCountPrice((Double)res[3]);
+        }
+        session.close();
+        return bizCurrentMonth;
+    }
+
 }

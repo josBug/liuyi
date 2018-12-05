@@ -6,7 +6,7 @@ import com.example.demo.entity.OperationPlatform;
 import com.example.demo.entity.OperationType;
 import com.example.demo.fragment.OperationFragment;
 import com.example.demo.mode.GoodsRecord;
-import com.example.demo.mode.StatictisModel;
+import com.example.demo.stuct.StatictisModel;
 import com.example.demo.stuct.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.management.ServiceNotFoundException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -51,7 +52,8 @@ public class OperationController {
                 goodsRecord.setUserName(lYopRequest.getUserName());
                 goodsRecord.setIsPay(message.getIsPay());
                 goodsRecord.setExpressCode("");
-                goodsRecord.setSource("爱库存");
+                goodsRecord.setSource("");
+                goodsRecord.setUserId(lYopRequest.getUserId());
                 pGoodsRecordHibernateDao.save(goodsRecord);
 
             });
@@ -65,11 +67,11 @@ public class OperationController {
     }
 
     @RequestMapping(value = "/search",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public List<GoodsRecord> search(@RequestBody LYopRequest lYopRequest) {
+    public List<GoodsRecord> search(@RequestBody LYopRequest lYopRequest) throws Exception {
         SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
         if (searchParam != null) {
             Map<String, Object> param = new HashMap<>();
-            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.SELECT);
+            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.SELECT, lYopRequest.getUserId());
 
             System.out.println(sql);
             System.out.println(JSONObject.toJSON(param));
@@ -79,11 +81,11 @@ public class OperationController {
     }
 
     @RequestMapping(value = "/search/app",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public List<GoodsRecord> searchApp(@RequestBody LYopRequest lYopRequest) {
+    public List<GoodsRecord> searchApp(@RequestBody LYopRequest lYopRequest) throws Exception {
         SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
         if (searchParam != null) {
             Map<String, Object> param = new HashMap<>();
-            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.APP, OperationType.SELECT);
+            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.APP, OperationType.SELECT, lYopRequest.getUserId());
             System.out.println(sql);
             System.out.println(JSONObject.toJSON(param));
             return pGoodsRecordHibernateDao.queryByLastId(sql, param, searchParam.getLimit());
@@ -92,12 +94,12 @@ public class OperationController {
     }
 
     @RequestMapping(value = "/search/count",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public int searchCount(@RequestBody LYopRequest lYopRequest) {
+    public int searchCount(@RequestBody LYopRequest lYopRequest) throws Exception {
         System.out.println("search++++++++++++++++++++++++");
         SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
         if (searchParam != null) {
             Map<String, Object> param = new HashMap<>();
-            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.COUNT);
+            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.COUNT, lYopRequest.getUserId());
             System.out.println("count+++++++++" + sql);
             System.out.println("count+++++++++" + JSONObject.toJSON(param));
             return pGoodsRecordHibernateDao.count(sql, param, searchParam.getOffset(), searchParam.getLimit());
@@ -106,12 +108,12 @@ public class OperationController {
     }
 
     @RequestMapping(value = "/search/statictis",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public StatictisModel searchStatictis(@RequestBody LYopRequest lYopRequest) {
+    public StatictisModel searchStatictis(@RequestBody LYopRequest lYopRequest) throws Exception {
         System.out.println("search++++++++++++++++++++++++");
         SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
         if (searchParam != null) {
             Map<String, Object> param = new HashMap<>();
-            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.SELECT_SUM);
+            String sql = operationFragment.constructSql(searchParam, param, OperationPlatform.PC, OperationType.SELECT_SUM, lYopRequest.getUserId());
             System.out.println("count+++++++++" + sql);
             System.out.println("count+++++++++" + JSONObject.toJSON(param));
             return pGoodsRecordHibernateDao.statictisGoods(sql, param);
@@ -120,7 +122,7 @@ public class OperationController {
     }
 
     @RequestMapping(value = "/update",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public ResponseDemo update(@RequestBody LYopRequest lYopRequest) {
+    public ResponseDemo update(@RequestBody LYopRequest lYopRequest) throws Exception {
         OperationRequest operationRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(OperationRequest.class));
         ResponseDemo responseDemo = new ResponseDemo();
         if (operationRequest != null) {
@@ -128,7 +130,10 @@ public class OperationController {
             goodsRecord.setCountPrice(new BigDecimal((goodsRecord.getOldPrice() + goodsRecord.getTip()) * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
             goodsRecord.setUserName(lYopRequest.getUserName());
 
-            GoodsRecord oldGoodsRecord = pGoodsRecordHibernateDao.getById(goodsRecord.getId());
+            GoodsRecord oldGoodsRecord = pGoodsRecordHibernateDao.getById(goodsRecord.getId(), lYopRequest.getUserId());
+            if (oldGoodsRecord == null) {
+                throw new ServiceNotFoundException("获取信息失败");
+            }
             oldGoodsRecord.setUserName(goodsRecord.getUserName());
             oldGoodsRecord.setRemark(goodsRecord.getRemark());
             oldGoodsRecord.setTip(goodsRecord.getTip());
@@ -176,7 +181,7 @@ public class OperationController {
         ResponseDemo responseDemo = new ResponseDemo();
         if (batchOperator != null) {
             String sql = operationFragment.constructBatchSql(batchOperator.getBatchType());
-            pGoodsRecordHibernateDao.updateBatch(batchOperator.getIds(), batchOperator.getValue(), sql);
+            pGoodsRecordHibernateDao.updateBatch(batchOperator.getIds(), batchOperator.getValue(), sql, lYopRequest.getUserId());
             responseDemo.setCode(200);
             responseDemo.setRessult("success");
             return responseDemo;
@@ -192,7 +197,7 @@ public class OperationController {
         ResponseDemo responseDemo = new ResponseDemo();
         if (expressRequest != null) {
             String sql = operationFragment.constructExpress();
-            pGoodsRecordHibernateDao.updateExpress(expressRequest.getIds(), expressRequest.getExpressCode(), sql);
+            pGoodsRecordHibernateDao.updateExpress(expressRequest.getIds(), expressRequest.getExpressCode(), sql, lYopRequest.getUserId());
             responseDemo.setCode(200);
             responseDemo.setRessult("success");
             return responseDemo;
@@ -207,7 +212,7 @@ public class OperationController {
         BatchOperator batchOperator = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(BatchOperator.class));
         ResponseDemo responseDemo = new ResponseDemo();
         if (batchOperator != null) {
-            pGoodsRecordHibernateDao.deleteV2(batchOperator.getIds());
+            pGoodsRecordHibernateDao.deleteV2(batchOperator.getIds(), lYopRequest.getUserId());
             responseDemo.setCode(200);
             responseDemo.setRessult("success");
             return responseDemo;
@@ -215,5 +220,11 @@ public class OperationController {
         responseDemo.setCode(500);
         responseDemo.setRessult("failed");
         return responseDemo;
+    }
+
+    @RequestMapping(value = "/month/statistic",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public BizCurrentMonth currentMonthStatistic(@RequestBody LYopRequest lYopRequest) {
+        String sql = operationFragment.constructMonthStatistic();
+        return pGoodsRecordHibernateDao.getMonthStatistic(sql, lYopRequest.getUserId());
     }
 }
