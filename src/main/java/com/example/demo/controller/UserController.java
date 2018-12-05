@@ -51,6 +51,12 @@ public class UserController {
                 responseDemo.setRessult("failed");
                 return responseDemo;
             }
+            if (!PassWordUtil.checkPasswd(checkUserInfo.getPasswd())) {
+                ResponseDemo responseDemo = new ResponseDemo();
+                responseDemo.setCode(1000);
+                responseDemo.setRessult("failed");
+                return responseDemo;
+            }
             boolean success = pUserInfoHibernateDao.registryUser(checkUserInfo.getUserName(), checkUserInfo.getPasswd(), checkUserInfo.getEmail());
             if (!success) {
                 ResponseDemo responseDemo = new ResponseDemo();

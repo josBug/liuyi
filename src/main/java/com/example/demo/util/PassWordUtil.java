@@ -44,4 +44,31 @@ public class PassWordUtil {
         int tempint = (int)Math.ceil(temp);
         return tempint;
     }
+    public static int NumberCount(String s){//计算字符串中的数字的个数
+        int count = 0;
+        for(int i = 0;i < s.length();i++){
+            if(Character.isDigit(s.charAt(i)))
+                count++;
+        }
+        return count;
+    }
+    public static boolean Test(String s){//字符串中是否仅含字母和数字
+        boolean Password = false;
+        for(int i = 0;i<s.length();i++){
+            if(Character.isDigit(s.charAt(i))||Character.isLetter(s.charAt(i)))
+                Password = true;
+            else{
+                Password = false;
+                break;
+            }
+        }
+        return Password;
+    }
+    public static Boolean checkPasswd(String s){
+        if(NumberCount(s) >= 2 && s.length() >= 8 && Test(s))
+            return true;
+        else
+            return false;
+    }
+
 }
