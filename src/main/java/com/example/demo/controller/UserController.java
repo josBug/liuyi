@@ -48,30 +48,30 @@ public class UserController {
                     || checkUserInfo.getEmail().isEmpty()) {
                 ResponseDemo responseDemo = new ResponseDemo();
                 responseDemo.setCode(500);
-                responseDemo.setRessult("failed");
+                responseDemo.setResult("failed");
                 return responseDemo;
             }
             if (!PassWordUtil.checkPasswd(checkUserInfo.getPasswd())) {
                 ResponseDemo responseDemo = new ResponseDemo();
                 responseDemo.setCode(1000);
-                responseDemo.setRessult("failed");
+                responseDemo.setResult("failed");
                 return responseDemo;
             }
             boolean success = pUserInfoHibernateDao.registryUser(checkUserInfo.getUserName(), checkUserInfo.getPasswd(), checkUserInfo.getEmail());
             if (!success) {
                 ResponseDemo responseDemo = new ResponseDemo();
                 responseDemo.setCode(500);
-                responseDemo.setRessult("failed");
+                responseDemo.setResult("failed");
                 return responseDemo;
             }
             ResponseDemo responseDemo = new ResponseDemo();
             responseDemo.setCode(200);
-            responseDemo.setRessult("success");
+            responseDemo.setResult("success");
             return responseDemo;
         }
         ResponseDemo responseDemo = new ResponseDemo();
         responseDemo.setCode(500);
-        responseDemo.setRessult("");
+        responseDemo.setResult("");
         return responseDemo;
     }
 
@@ -86,19 +86,24 @@ public class UserController {
                     || checkUserInfo.getPasswd().isEmpty()) {
                 ResponseDemo responseDemo = new ResponseDemo();
                 responseDemo.setCode(500);
-                responseDemo.setRessult("failed");
+                responseDemo.setResult("failed");
                 return responseDemo;
             }
 
             String ksid = pUserInfoHibernateDao.checkUserInfo(checkUserInfo.getUserName(), checkUserInfo.getPasswd(), checkUserInfo.getEmailCode());
+            if (null == ksid || ksid.isEmpty()) {
+                ResponseDemo responseDemo = new ResponseDemo();
+                responseDemo.setCode(500);
+                responseDemo.setResult("");
+            }
             ResponseDemo responseDemo = new ResponseDemo();
             responseDemo.setCode(200);
-            responseDemo.setRessult(ksid);
+            responseDemo.setResult(ksid);
             return responseDemo;
         }
         ResponseDemo responseDemo = new ResponseDemo();
         responseDemo.setCode(500);
-        responseDemo.setRessult("");
+        responseDemo.setResult("");
         return responseDemo;
     }
 
@@ -112,23 +117,23 @@ public class UserController {
 //                    || checkUserInfo.getUserName() == null
 //                    || checkUserInfo.getUserName().isEmpty()) {
 //                responseDemo.setCode(500);
-//                responseDemo.setRessult("failed");
+//                responseDemo.setResult("failed");
 //                return responseDemo;
 //            }
 //
 //            boolean status = pUserInfoHibernateDao.checkLoginStatus(checkUserInfo.getUserName(), checkUserInfo.getKsid());
 //            if (status) {
 //                responseDemo.setCode(200);
-//                responseDemo.setRessult("success");
+//                responseDemo.setResult("success");
 //            } else {
 //                responseDemo.setCode(500);
-//                responseDemo.setRessult("failed");
+//                responseDemo.setResult("failed");
 //            }
 //
 //            return responseDemo;
 //        }
 //        responseDemo.setCode(500);
-//        responseDemo.setRessult("failed");
+//        responseDemo.setResult("failed");
 //        return responseDemo;
 //    }
 
@@ -142,17 +147,17 @@ public class UserController {
                     || checkUserInfo.getUserName() == null
                     || checkUserInfo.getUserName().isEmpty()) {
                 responseDemo.setCode(500);
-                responseDemo.setRessult("failed");
+                responseDemo.setResult("failed");
                 return responseDemo;
             }
 
             pUserInfoHibernateDao.loginOut(checkUserInfo.getUserName(), checkUserInfo.getKsid());
             responseDemo.setCode(200);
-            responseDemo.setRessult("success");
+            responseDemo.setResult("success");
             return responseDemo;
         }
         responseDemo.setCode(500);
-        responseDemo.setRessult("failed");
+        responseDemo.setResult("failed");
         return responseDemo;
     }
 
@@ -163,7 +168,7 @@ public class UserController {
         UserInfo userInfoByPasswd = pUserInfoHibernateDao.getUserInfoByPasswd(checkUserInfo.getUserName(), checkUserInfo.getPasswd());
         if (userInfoByPasswd == null) {
             responseDemo.setCode(404);
-            responseDemo.setRessult("failed");
+            responseDemo.setResult("failed");
             return responseDemo;
         }
         Properties properties = new Properties();
@@ -188,7 +193,7 @@ public class UserController {
             e.printStackTrace();
         }
         responseDemo.setCode(200);
-        responseDemo.setRessult("success");
+        responseDemo.setResult("success");
         return responseDemo;
     }
 

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ResponseDemo {
-    private String ressult;
+    private String result;
 
     private int code;
 }

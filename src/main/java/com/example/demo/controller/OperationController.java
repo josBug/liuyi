@@ -58,11 +58,11 @@ public class OperationController {
 
             });
             responseDemo.setCode(200);
-            responseDemo.setRessult("success");
+            responseDemo.setResult("success");
             return responseDemo;
         }
         responseDemo.setCode(500);
-        responseDemo.setRessult("failed");
+        responseDemo.setResult("failed");
         return responseDemo;
     }
 
@@ -146,11 +146,11 @@ public class OperationController {
             oldGoodsRecord.setAmount(goodsRecord.getAmount());
             pGoodsRecordHibernateDao.update(oldGoodsRecord);
             responseDemo.setCode(200);
-            responseDemo.setRessult("success");
+            responseDemo.setResult("success");
             return responseDemo;
         }
         responseDemo.setCode(500);
-        responseDemo.setRessult("failed");
+        responseDemo.setResult("failed");
         return responseDemo;
     }
 
@@ -167,11 +167,11 @@ public class OperationController {
                 pGoodsRecordHibernateDao.update(goodsRecord);
             });
             responseDemo.setCode(200);
-            responseDemo.setRessult("success");
+            responseDemo.setResult("success");
             return responseDemo;
         }
         responseDemo.setCode(500);
-        responseDemo.setRessult("failed");
+        responseDemo.setResult("failed");
         return responseDemo;
     }
 
@@ -183,11 +183,11 @@ public class OperationController {
             String sql = operationFragment.constructBatchSql(batchOperator.getBatchType());
             pGoodsRecordHibernateDao.updateBatch(batchOperator.getIds(), batchOperator.getValue(), sql, lYopRequest.getUserId());
             responseDemo.setCode(200);
-            responseDemo.setRessult("success");
+            responseDemo.setResult("success");
             return responseDemo;
         }
         responseDemo.setCode(500);
-        responseDemo.setRessult("failed");
+        responseDemo.setResult("failed");
         return responseDemo;
     }
 
@@ -199,11 +199,11 @@ public class OperationController {
             String sql = operationFragment.constructExpress();
             pGoodsRecordHibernateDao.updateExpress(expressRequest.getIds(), expressRequest.getExpressCode(), sql, lYopRequest.getUserId());
             responseDemo.setCode(200);
-            responseDemo.setRessult("success");
+            responseDemo.setResult("success");
             return responseDemo;
         }
         responseDemo.setCode(500);
-        responseDemo.setRessult("failed");
+        responseDemo.setResult("failed");
         return responseDemo;
     }
 
@@ -214,11 +214,11 @@ public class OperationController {
         if (batchOperator != null) {
             pGoodsRecordHibernateDao.deleteV2(batchOperator.getIds(), lYopRequest.getUserId());
             responseDemo.setCode(200);
-            responseDemo.setRessult("success");
+            responseDemo.setResult("success");
             return responseDemo;
         }
         responseDemo.setCode(500);
-        responseDemo.setRessult("failed");
+        responseDemo.setResult("failed");
         return responseDemo;
     }
 
