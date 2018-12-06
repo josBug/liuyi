@@ -170,6 +170,9 @@ public class UserController {
         properties.setProperty("mail.smtp.auth", "true");
         properties.setProperty("mail.transport.protocol", "smtp");
         properties.setProperty("mail.smtp.host", "smtp.sina.cn");
+        properties.setProperty("mail.smtp.socketFactory.port", "465");
+        properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        properties.setProperty("mail.smtp.port", "465");
         properties.setProperty("mail.smtp.auth", "true");
         Session session = Session.getInstance(properties);
         session.setDebug(true);
