@@ -7,12 +7,14 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,115 +36,157 @@ public class PGoodsRecordHibernateDao {
 
     public List<GoodsRecord> query(String sql, Map<String, Object> param, int offset, int limit) {
         Session session = sessionFactory.openSession();
+        List<GoodsRecord> list = new ArrayList<>();
+        try {
+            System.out.println(sql);
+            Query query = session.createQuery(sql);
 
-        System.out.println(sql);
-        Query query = session.createQuery(sql);
+            for (String key: param.keySet()) {
+                query.setParameter(key, param.get(key));
+            }
+            query.setMaxResults(limit);
+            query.setFirstResult(offset);
+            list = query.list();
+        } catch (Exception e) {
 
-        for (String key: param.keySet()) {
-            query.setParameter(key, param.get(key));
+        } finally {
+            session.close();
         }
-        query.setMaxResults(limit);
-        query.setFirstResult(offset);
-        List<GoodsRecord> list = query.list();
-        session.close();
+
         return list;
     }
 
     public GoodsRecord getById(Long id, Long userId) {
         Session session = sessionFactory.openSession();
+        List<GoodsRecord> goodsRecords = new ArrayList<>();
+        try {
+            Query query = session.createQuery("FROM GoodsRecord WHERE id = :id and userId = :userId");
+            query.setParameter("id", id);
+            query.setParameter("userId", userId);
+            goodsRecords = query.list();
+        } catch (Exception e) {
 
-        Query query = session.createQuery("FROM GoodsRecord WHERE id = :id and userId = :userId");
-        query.setParameter("id", id);
-        query.setParameter("userId", userId);
-        List<GoodsRecord> goodsRecords = query.list();
-        session.close();
+        } finally {
+            session.close();
+
+        }
+
         return CollectionUtils.isEmpty(goodsRecords) ? null : goodsRecords.get(0);
     }
 
     public List<GoodsRecord> queryByLastId(String sql, Map<String, Object> param, int limit) {
         Session session = sessionFactory.openSession();
+        List<GoodsRecord> list = new ArrayList<>();
+        try {
+            System.out.println(sql);
+            Query query = session.createQuery(sql);
 
-        System.out.println(sql);
-        Query query = session.createQuery(sql);
+            for (String key: param.keySet()) {
+                query.setParameter(key, param.get(key));
+            }
+            query.setMaxResults(limit);
+            list = query.list();
+        } catch (Exception e) {
 
-        for (String key: param.keySet()) {
-            query.setParameter(key, param.get(key));
+        } finally {
+            session.close();
         }
-        query.setMaxResults(limit);
-        List<GoodsRecord> list = query.list();
-        session.close();
+
         return list;
     }
 
     public void save(GoodsRecord goodsRecord) {
         Session session = sessionFactory.openSession();
-        session.beginTransaction();
         try {
+            session.beginTransaction();
             session.save(goodsRecord);
             session.flush();
             session.evict(goodsRecord);
         } catch (Exception e) {
             return;
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
+
+            session.close();
         }
 
-        session.getTransaction().commit();
-        session.close();
     }
 
     public int count(String sql, Map<String, Object> param, int offset, int limit) {
         Session session = sessionFactory.openSession();
-        Query query = session.createQuery(sql);
-        for (String key: param.keySet()) {
-            query.setParameter(key, param.get(key));
+        int count = 0;
+        try {
+            Query query = session.createQuery(sql);
+            for (String key: param.keySet()) {
+                query.setParameter(key, param.get(key));
+            }
+            System.out.println("================" + query.toString());
+            count = ((Number)query.uniqueResult()).intValue();
+        } catch (Exception e) {
+
+        } finally {
+            session.close();
+
         }
-        System.out.println("================" + query.toString());
-        int count = ((Number)query.uniqueResult()).intValue();
-        session.close();
+
         return count;
     }
 
     public StatictisModel statictisGoods(String sql, Map<String, Object> param) {
         Session session = sessionFactory.openSession();
-        Query query = session.createQuery(sql);
-        for (String key: param.keySet()) {
-            query.setParameter(key, param.get(key));
-        }
-        System.out.println("================" + query.toString());
-        List<Object[]> results = query.list();
         StatictisModel statictisModel = new StatictisModel();
-        if (results.size() != 0) {
-            Object[] res = results.get(0);
-            if (res[0] == null) {
-                return statictisModel;
+        try {
+            Query query = session.createQuery(sql);
+            for (String key: param.keySet()) {
+                query.setParameter(key, param.get(key));
             }
-            statictisModel.setTips((Double)res[0]);
-            statictisModel.setAmounts((Long) res[1]);
-            statictisModel.setCountPrices((Double)res[2]);
-            statictisModel.setOldPrices((Double)res[3]);
+            System.out.println("================" + query.toString());
+            List<Object[]> results = query.list();
+            if (results.size() != 0) {
+                Object[] res = results.get(0);
+                if (res[0] == null) {
+                    return statictisModel;
+                }
+                statictisModel.setTips((Double)res[0]);
+                statictisModel.setAmounts((Long) res[1]);
+                statictisModel.setCountPrices((Double)res[2]);
+                statictisModel.setOldPrices((Double)res[3]);
+            }
+        } catch (Exception e) {
+
+        } finally {
+            session.close();
         }
-        session.close();
+
         return statictisModel;
     }
 
     public void update(GoodsRecord goodsRecord) {
         Session session = sessionFactory.openSession();
-        session.beginTransaction();
         try {
+            session.beginTransaction();
             session.update(goodsRecord);
             session.flush();
             session.evict(goodsRecord);
         } catch (Exception e) {
             return;
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
+
+            session.close();
         }
 
-        session.getTransaction().commit();
-        session.close();
+
     }
 
     public void updateBatch(List<Long> ids, int value, String sql, Long userId) {
         Session session = sessionFactory.openSession();
-        session.beginTransaction();
         try {
+            session.beginTransaction();
             Query query = session.createQuery(sql);
             query.setParameter("value", value);
             query.setParameter("ids", ids);
@@ -150,10 +194,13 @@ public class PGoodsRecordHibernateDao {
             query.executeUpdate();
         } catch (Exception e) {
             return;
-        }
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
 
-        session.getTransaction().commit();
-        session.close();
+            session.close();
+        }
     }
 
     public void updateExpress(List<Long> ids, String expressCode, String sql, Long userId) {
@@ -167,18 +214,31 @@ public class PGoodsRecordHibernateDao {
             query.executeUpdate();
         } catch (Exception e) {
             return;
-        }
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
 
-        session.getTransaction().commit();
-        session.close();
+            session.close();
+        }
     }
 
     public void delete(GoodsRecord goodsRecord) {
         Session session = sessionFactory.openSession();
-        session.beginTransaction();
-        session.delete(goodsRecord);
-        session.getTransaction().commit();
-        session.close();
+        try {
+            session.beginTransaction();
+            session.delete(goodsRecord);
+        } catch (Exception e) {
+            return;
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
+
+            session.close();
+        }
+
+
     }
 
     public void deleteV2(List<Long> ids, Long userId) {
@@ -191,35 +251,45 @@ public class PGoodsRecordHibernateDao {
             query.executeUpdate();
         }catch (Exception e) {
             return;
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
+
+            session.close();
         }
 
-        session.getTransaction().commit();
-        session.close();
+
     }
 
     public BizCurrentMonth getMonthStatistic(String sql, Long userId) {
         Session session = sessionFactory.openSession();
-        Query query = session.createQuery(sql);
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startTime = now.minusDays(now.getDayOfMonth() - 1).withHour(0).withMinute(0).withSecond(0);
-        query.setParameter("userId", userId);
-        query.setParameter("startTime", startTime);
-        query.setParameter("endTime", now);
-
-        System.out.println("================" + query.toString());
-        List<Object[]> results = query.list();
         BizCurrentMonth bizCurrentMonth = new BizCurrentMonth();
-        if (results.size() != 0) {
-            Object[] res = results.get(0);
-            if (res[0] == null) {
-                return bizCurrentMonth;
+        try {
+            Query query = session.createQuery(sql);
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime startTime = now.minusDays(now.getDayOfMonth() - 1).withHour(0).withMinute(0).withSecond(0);
+            query.setParameter("userId", userId);
+            query.setParameter("startTime", startTime);
+            query.setParameter("endTime", now);
+
+            System.out.println("================" + query.toString());
+            List<Object[]> results = query.list();
+            if (results.size() != 0) {
+                Object[] res = results.get(0);
+                if (res[0] == null) {
+                    return bizCurrentMonth;
+                }
+                bizCurrentMonth.setAmount(((Long) res[0]).intValue());
+                bizCurrentMonth.setOldPrice((Double) res[1]);
+                bizCurrentMonth.setTips((Double)res[2]);
+                bizCurrentMonth.setCountPrice((Double)res[3]);
             }
-            bizCurrentMonth.setAmount(((Long) res[0]).intValue());
-            bizCurrentMonth.setOldPrice((Double) res[1]);
-            bizCurrentMonth.setTips((Double)res[2]);
-            bizCurrentMonth.setCountPrice((Double)res[3]);
+        } catch (Exception e) {
+
+        } finally {
+            session.close();
         }
-        session.close();
         return bizCurrentMonth;
     }
 
