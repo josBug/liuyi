@@ -214,7 +214,7 @@ public class PGoodsRecordHibernateDao {
             if (res[0] == null) {
                 return bizCurrentMonth;
             }
-            bizCurrentMonth.setAmount((Integer) res[0]);
+            bizCurrentMonth.setAmount(((Long) res[0]).intValue());
             bizCurrentMonth.setOldPrice((Double) res[1]);
             bizCurrentMonth.setTips((Double)res[2]);
             bizCurrentMonth.setCountPrice((Double)res[3]);
