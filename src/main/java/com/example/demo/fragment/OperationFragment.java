@@ -123,20 +123,29 @@ public class OperationFragment {
     }
 
     public String constructMonthStatistic() {
-        return new StringBuffer("SELECT SUM(amount) as amounts,SUM(oldPrice) as oldPrices, SUM(tip) as tips, SUM(countPrice) as countPrices WHERE userId = :userId AND createAt >= :startTime AND createAt <= :endTime").toString();
+        return new StringBuffer("SELECT SUM(amount) as amounts,SUM(oldPrice) as oldPrices,SUM(tip) as tips,SUM(countPrice) as countPrices FROM GoodsRecord WHERE userId = :userId AND createAt >= :startTime AND createAt <= :endTime").toString();
     }
 
     private void checkParam(SearchParam searchParam) throws Exception{
-        if (searchParam.getGoodsName().indexOf("#") != -1) {
+        if (searchParam.getGoodsName() != null && searchParam.getGoodsName().indexOf("#") != -1) {
             throw new Exception("包含非法字符");
         }
 
-        if (searchParam.getName().indexOf("#") != -1) {
+        if (searchParam.getName() != null && searchParam.getName().indexOf("#") != -1) {
             throw new Exception("包含非法字符");
         }
 
-        if (searchParam.getSort().indexOf("#") != -1) {
+        if (searchParam.getSort() != null && searchParam.getSort().indexOf("#") != -1) {
             throw new Exception("包含非法字符");
         }
+    }
+
+    public Boolean checkParamValid(String... args) {
+        for (String arg: args) {
+            if (arg == null || arg.isEmpty() || arg.indexOf("#") != -1) {
+                return false;
+            }
+        }
+        return true;
     }
 }

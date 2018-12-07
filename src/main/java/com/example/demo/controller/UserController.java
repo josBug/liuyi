@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dao.PUserInfoHibernateDao;
+import com.example.demo.fragment.OperationFragment;
 import com.example.demo.mode.UserInfo;
 import com.example.demo.stuct.CheckUserInfo;
 import com.example.demo.stuct.LYopRequest;
@@ -29,6 +30,9 @@ public class UserController {
     private PUserInfoHibernateDao pUserInfoHibernateDao;
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    @Autowired
+    private OperationFragment operationFragment;
+
     @RequestMapping(value = "/",produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
     public ModelAndView sign() {
         ModelAndView modelAndView = new ModelAndView("index");
@@ -40,17 +44,20 @@ public class UserController {
         CheckUserInfo checkUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(CheckUserInfo.class));
 
         if (checkUserInfo != null) {
-            if (checkUserInfo.getUserName() == null
-                    || checkUserInfo.getUserName().isEmpty()
-                    || checkUserInfo.getPasswd() == null
-                    || checkUserInfo.getPasswd().isEmpty()
-                    || checkUserInfo.getEmail() == null
-                    || checkUserInfo.getEmail().isEmpty()) {
+            if (checkUserInfo.getPasswd() == null
+                    || checkUserInfo.getPasswd().isEmpty()) {
                 ResponseDemo responseDemo = new ResponseDemo();
                 responseDemo.setCode(500);
                 responseDemo.setResult("failed");
                 return responseDemo;
             }
+            if (!operationFragment.checkParamValid(checkUserInfo.getUserName(), checkUserInfo.getEmail())) {
+                ResponseDemo responseDemo = new ResponseDemo();
+                responseDemo.setCode(1000);
+                responseDemo.setResult("failed");
+                return responseDemo;
+            }
+
             if (!PassWordUtil.checkPasswd(checkUserInfo.getPasswd())) {
                 ResponseDemo responseDemo = new ResponseDemo();
                 responseDemo.setCode(1000);
@@ -80,16 +87,12 @@ public class UserController {
         CheckUserInfo checkUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(CheckUserInfo.class));
 
         if (checkUserInfo != null) {
-            if (checkUserInfo.getUserName() == null
-                    || checkUserInfo.getUserName().isEmpty()
-                    || checkUserInfo.getPasswd() == null
-                    || checkUserInfo.getPasswd().isEmpty()) {
+            if (!operationFragment.checkParamValid(checkUserInfo.getUserName(), checkUserInfo.getPasswd(), checkUserInfo.getEmailCode())) {
                 ResponseDemo responseDemo = new ResponseDemo();
                 responseDemo.setCode(500);
                 responseDemo.setResult("failed");
                 return responseDemo;
             }
-
             String ksid = pUserInfoHibernateDao.checkUserInfo(checkUserInfo.getUserName(), checkUserInfo.getPasswd(), checkUserInfo.getEmailCode());
             if (null == ksid || ksid.isEmpty()) {
                 ResponseDemo responseDemo = new ResponseDemo();
