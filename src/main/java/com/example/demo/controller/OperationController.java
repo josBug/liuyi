@@ -168,8 +168,7 @@ public class OperationController {
                 responseDemo.setResult("failed");
                 return responseDemo;
             }
-
-            oldGoodsRecord.setUserName(goodsRecord.getUserName());
+            oldGoodsRecord.setUserName(null);
             oldGoodsRecord.setRemark(goodsRecord.getRemark());
             oldGoodsRecord.setTip(goodsRecord.getTip());
             oldGoodsRecord.setOldPrice(goodsRecord.getOldPrice());

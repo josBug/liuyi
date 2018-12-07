@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,168 +35,219 @@ public class PUserInfoHibernateDao {
 
     public String checkUserInfo(String userName, String passwd, String emailCode) {
         Session session = sessionFactory.openSession();
+        String ksid = null;
+        try {
+            Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd and emailCode = :emailCode");
+            query.setParameter("userName", userName);
+            query.setParameter("passwd", passwd);
+            query.setParameter("emailCode", emailCode);
+            query.setMaxResults(1);
+            List<UserInfo> list = query.list();
+            if (list.size() != 1) {
+                return null;
+            }
 
-        Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd and emailCode = :emailCode");
-        query.setParameter("userName", userName);
-        query.setParameter("passwd", passwd);
-        query.setParameter("emailCode", emailCode);
-        query.setMaxResults(1);
-        List<UserInfo> list = query.list();
-        if (list.size() != 1) {
-            return null;
+            UUID uuid=UUID.randomUUID();
+            ksid = uuid.toString();
+            UserInfo userInfo = list.get(0);
+            userInfo.setSession(ksid);
+            userInfo.setStatus(1);
+            session.beginTransaction();
+            session.update(userInfo);
+        } catch (Exception e) {
+
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
+            session.close();
         }
 
-        UUID uuid=UUID.randomUUID();
-        String ksid = uuid.toString();
-        UserInfo userInfo = list.get(0);
-        userInfo.setSession(ksid);
-        userInfo.setStatus(1);
-
-        session.beginTransaction();
-        session.update(userInfo);
-        session.getTransaction().commit();
-
-        session.close();
         return ksid;
     }
 
     public UserInfo checkKsid(String ksid) {
         Session session = sessionFactory.openSession();
+        List<UserInfo> list = new ArrayList<>();
+        try {
+            Query query = session.createQuery("FROM UserInfo where session = :ksid");
+            query.setParameter("ksid", ksid);
+            query.setMaxResults(1);
+            list = query.list();
 
-        Query query = session.createQuery("FROM UserInfo where session = :ksid");
-        query.setParameter("ksid", ksid);
-        query.setMaxResults(1);
-        List<UserInfo> list = query.list();
+            if (list.isEmpty()) {
+                return null;
+            }
+        } catch (Exception e) {
 
-        if (list.isEmpty()) {
-            return null;
+        } finally {
+            session.close();
         }
 
-        session.close();
+
         return list.get(0);
     }
 
     public boolean checkLoginStatus(String userName, String ksid) {
         Session session = sessionFactory.openSession();
 
-        Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
-        query.setParameter("userName", userName);
-        query.setParameter("ksid", ksid);
-        query.setMaxResults(1);
-        List<UserInfo> list = query.list();
+        try {
+            Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
+            query.setParameter("userName", userName);
+            query.setParameter("ksid", ksid);
+            query.setMaxResults(1);
+            List<UserInfo> list = query.list();
 
-        if (list.size() != 1) {
-            return false;
+            if (list.size() != 1) {
+                return false;
+            }
+
+            UserInfo userInfo = list.get(0);
+            if (userInfo.getStatus() == 1) {
+                return false;
+            }
+
+            userInfo.setStatus(1);
+
+            session.beginTransaction();
+            session.update(userInfo);
+        } catch (Exception e) {
+
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
+
+            session.close();
         }
 
-        UserInfo userInfo = list.get(0);
-        if (userInfo.getStatus() == 1) {
-            return false;
-        }
 
-        userInfo.setStatus(1);
-
-        session.beginTransaction();
-        session.update(userInfo);
-        session.getTransaction().commit();
-
-        session.close();
         return true;
     }
 
     public void loginOut(String userName, String ksid) {
         Session session = sessionFactory.openSession();
 
-        Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
-        query.setParameter("userName", userName);
-        query.setParameter("ksid", ksid);
-        query.setMaxResults(1);
-        List<UserInfo> list = query.list();
-        if (list.size() != 1) {
-            return;
+        try {
+            Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
+            query.setParameter("userName", userName);
+            query.setParameter("ksid", ksid);
+            query.setMaxResults(1);
+            List<UserInfo> list = query.list();
+            if (list.size() != 1) {
+                return;
+            }
+
+            UserInfo userInfo = list.get(0);
+            if (userInfo.getStatus() == 0) {
+                return;
+            }
+
+            userInfo.setSession("");
+            userInfo.setStatus(0);
+            userInfo.setEmailCode("");
+
+            session.beginTransaction();
+            session.update(userInfo);
+        } catch (Exception e) {
+
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
+
+            session.close();
         }
 
-        UserInfo userInfo = list.get(0);
-        if (userInfo.getStatus() == 0) {
-            return;
-        }
 
-        userInfo.setSession("");
-        userInfo.setStatus(0);
-        userInfo.setEmailCode("");
-
-        session.beginTransaction();
-        session.update(userInfo);
-        session.getTransaction().commit();
-
-        session.close();
     }
 
     public boolean registryUser(String userName, String passwd, String email) {
         Session session = sessionFactory.openSession();
 
-        Query query = session.createQuery("FROM UserInfo where userName = :userName");
-        query.setParameter("userName", userName);
-        query.setMaxResults(1);
-        List<UserInfo> list = query.list();
-        if (list.size() != 0) {
-            return false;
+        try {
+            Query query = session.createQuery("FROM UserInfo where userName = :userName");
+            query.setParameter("userName", userName);
+            query.setMaxResults(1);
+            List<UserInfo> list = query.list();
+            if (list.size() != 0) {
+                return false;
+            }
+
+            UserInfo userInfo = new UserInfo();
+            userInfo.setUserName(userName);
+            userInfo.setPasswd(passwd);
+            userInfo.setEmail(email);
+            userInfo.setSession("");
+            userInfo.setStatus(0);
+            userInfo.setEmailCode("");
+
+
+            session.beginTransaction();
+            session.save(userInfo);
+        } catch (Exception e) {
+
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
+
+            session.close();
         }
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUserName(userName);
-        userInfo.setPasswd(passwd);
-        userInfo.setEmail(email);
-        userInfo.setSession("");
-        userInfo.setStatus(0);
-        userInfo.setEmailCode("");
-
-
-        session.beginTransaction();
-        session.save(userInfo);
-        session.getTransaction().commit();
-
-        session.close();
         return true;
     }
 
     public void updateEmailCode(String userName, String passwd, String emailCode) {
         Session session = sessionFactory.openSession();
 
-        Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
-        query.setParameter("userName", userName);
-        query.setParameter("passwd", passwd);
-        query.setMaxResults(1);
-        List<UserInfo> list = query.list();
-        if (list.size() != 1) {
-            return;
+        try {
+            Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
+            query.setParameter("userName", userName);
+            query.setParameter("passwd", passwd);
+            query.setMaxResults(1);
+            List<UserInfo> list = query.list();
+            if (list.size() != 1) {
+                return;
+            }
+
+            UserInfo userInfo = list.get(0);
+            userInfo.setEmailCode(emailCode);
+
+            session.beginTransaction();
+            session.update(userInfo);
+        } catch (Exception e) {
+
+        } finally {
+            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
+                session.getTransaction().commit();
+            }
+
+            session.close();
         }
-
-        UserInfo userInfo = list.get(0);
-        userInfo.setEmailCode(emailCode);
-
-        session.beginTransaction();
-        session.update(userInfo);
-        session.getTransaction().commit();
-
-        session.close();
     }
 
     public UserInfo getUserInfoByPasswd(String userName, String passwd) {
         Session session = sessionFactory.openSession();
+        UserInfo userInfo = null;
+        try {
+            Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
+            query.setParameter("userName", userName);
+            query.setParameter("passwd", passwd);
+            query.setMaxResults(1);
+            List<UserInfo> list = query.list();
+            if (list.size() != 1) {
+                return null;
+            }
 
-        Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
-        query.setParameter("userName", userName);
-        query.setParameter("passwd", passwd);
-        query.setMaxResults(1);
-        List<UserInfo> list = query.list();
-        if (list.size() != 1) {
-            return null;
+            userInfo = list.get(0);
+        } catch (Exception e) {
+
+        } finally {
+            session.close();
+
         }
 
-        UserInfo userInfo = list.get(0);
-        session.close();
         return userInfo;
     }
-
 }
