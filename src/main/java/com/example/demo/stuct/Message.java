@@ -24,4 +24,6 @@ public class Message {
     private int send;
 
     private int isPay;
+
+    private String source;
 }

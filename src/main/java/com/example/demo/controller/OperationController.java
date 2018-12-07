@@ -9,6 +9,7 @@ import com.example.demo.mode.GoodsRecord;
 import com.example.demo.stuct.StatictisModel;
 import com.example.demo.stuct.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +39,9 @@ public class OperationController {
         Result result = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(Result.class));
         if (result != null) {
             result.getMessages().stream().forEach(message -> {
+                if (!checkParam(message)) {
+                    return;
+                }
                 GoodsRecord goodsRecord = new GoodsRecord();
                 goodsRecord.setAmount(message.getAmount());
                 goodsRecord.setGoodsName(message.getGoods());
@@ -52,7 +56,7 @@ public class OperationController {
                 goodsRecord.setUserName(lYopRequest.getUserName());
                 goodsRecord.setIsPay(message.getIsPay());
                 goodsRecord.setExpressCode("");
-                goodsRecord.setSource("");
+                goodsRecord.setSource(message.getSource());
                 goodsRecord.setUserId(lYopRequest.getUserId());
                 pGoodsRecordHibernateDao.save(goodsRecord);
 
@@ -66,6 +70,33 @@ public class OperationController {
         return responseDemo;
     }
 
+    private Boolean checkParam(Message message) {
+        if (message.getAmount() < 0 || message.getPrice() < 0 || message.getTip() < 0
+                || message.getCode() == null || message.getColor() == null || message.getGoods() == null
+                || message.getGoods().isEmpty() || message.getNames() == null || message.getNames().isEmpty()
+                || message.getSource() == null) {
+            return false;
+        }
+        if (message.getNames().indexOf("#") != -1 || message.getGoods().indexOf("#") != -1 || message.getSource().indexOf("#") != -1
+                || message.getCode().indexOf("#") != -1 || message.getRemark().indexOf("#") != -1) {
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean checkParam(GoodsRecord message) {
+        if (message.getAmount() < 0 || message.getOldPrice() < 0 || message.getTip() < 0
+                || message.getCode() == null || message.getColor() == null || message.getGoodsName() == null
+                || message.getGoodsName().isEmpty() || message.getName() == null || message.getName().isEmpty()
+                || message.getSource() == null) {
+            return false;
+        }
+        if (message.getName().indexOf("#") != -1 || message.getGoodsName().indexOf("#") != -1 || message.getSource().indexOf("#") != -1
+                || message.getCode().indexOf("#") != -1 || message.getRemark().indexOf("#") != -1) {
+            return false;
+        }
+        return true;
+    }
     @RequestMapping(value = "/search",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public List<GoodsRecord> search(@RequestBody LYopRequest lYopRequest) throws Exception {
         SearchParam searchParam = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(SearchParam.class));
@@ -128,12 +159,16 @@ public class OperationController {
         if (operationRequest != null) {
             GoodsRecord goodsRecord = operationRequest.getGoodsRecords().get(0);
             goodsRecord.setCountPrice(new BigDecimal((goodsRecord.getOldPrice() + goodsRecord.getTip()) * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
-            goodsRecord.setUserName(lYopRequest.getUserName());
-
             GoodsRecord oldGoodsRecord = pGoodsRecordHibernateDao.getById(goodsRecord.getId(), lYopRequest.getUserId());
             if (oldGoodsRecord == null) {
                 throw new ServiceNotFoundException("获取信息失败");
             }
+            if (!checkParam(goodsRecord)) {
+                responseDemo.setCode(500);
+                responseDemo.setResult("failed");
+                return responseDemo;
+            }
+
             oldGoodsRecord.setUserName(goodsRecord.getUserName());
             oldGoodsRecord.setRemark(goodsRecord.getRemark());
             oldGoodsRecord.setTip(goodsRecord.getTip());
@@ -195,6 +230,11 @@ public class OperationController {
     public ResponseDemo updateBatchExpress(@RequestBody LYopRequest lYopRequest) {
         ExpressRequest expressRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(ExpressRequest.class));
         ResponseDemo responseDemo = new ResponseDemo();
+        if (!operationFragment.checkParamValid(expressRequest.getExpressCode())) {
+            responseDemo.setCode(500);
+            responseDemo.setResult("failed");
+            return responseDemo;
+        }
         if (expressRequest != null) {
             String sql = operationFragment.constructExpress();
             pGoodsRecordHibernateDao.updateExpress(expressRequest.getIds(), expressRequest.getExpressCode(), sql, lYopRequest.getUserId());

@@ -5,11 +5,11 @@ import lombok.Data;
 @Data
 public class BizCurrentMonth {
 
-    private Integer amount;
+    private Integer amount = 0;
 
-    private Double tips;
+    private Double tips = 0.0;
 
-    private Double oldPrice;
+    private Double oldPrice = 0.0;
 
-    private Double countPrice;
+    private Double countPrice = 0.0;
 }
