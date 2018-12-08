@@ -98,6 +98,7 @@ public class UserController {
                 ResponseDemo responseDemo = new ResponseDemo();
                 responseDemo.setCode(500);
                 responseDemo.setResult("");
+                return responseDemo;
             }
             ResponseDemo responseDemo = new ResponseDemo();
             responseDemo.setCode(200);
