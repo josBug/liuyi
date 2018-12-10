@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
+import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
@@ -15,11 +16,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-public class PGoodsRecordHibernateDao {
+public class PGoodsRecordHibernateDao extends HibernateDaoSupport {
 
     private SessionFactory sessionFactory;
 
@@ -27,15 +29,21 @@ public class PGoodsRecordHibernateDao {
     public void initSessionFactory() {
         Configuration config = new Configuration().configure();
         sessionFactory = config.buildSessionFactory();
+        super.setSessionFactory(sessionFactory);
     }
 
     @PreDestroy
     public void destorySession() {
-        sessionFactory.close();
+        if (!sessionFactory.isClosed()) {
+            sessionFactory.close();
+        }
     }
 
+    private Session getCurrentSession() {
+        return this.getHibernateTemplate().getSessionFactory().getCurrentSession();
+    }
     public List<GoodsRecord> query(String sql, Map<String, Object> param, int offset, int limit) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         List<GoodsRecord> list = new ArrayList<>();
         try {
             System.out.println(sql);
@@ -48,16 +56,14 @@ public class PGoodsRecordHibernateDao {
             query.setFirstResult(offset);
             list = query.list();
         } catch (Exception e) {
-
-        } finally {
-            session.close();
+            return list;
         }
 
         return list;
     }
 
     public GoodsRecord getById(Long id, Long userId) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         List<GoodsRecord> goodsRecords = new ArrayList<>();
         try {
             Query query = session.createQuery("FROM GoodsRecord WHERE id = :id and userId = :userId");
@@ -65,17 +71,13 @@ public class PGoodsRecordHibernateDao {
             query.setParameter("userId", userId);
             goodsRecords = query.list();
         } catch (Exception e) {
-
-        } finally {
-            session.close();
-
         }
 
         return CollectionUtils.isEmpty(goodsRecords) ? null : goodsRecords.get(0);
     }
 
     public List<GoodsRecord> queryByLastId(String sql, Map<String, Object> param, int limit) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         List<GoodsRecord> list = new ArrayList<>();
         try {
             System.out.println(sql);
@@ -87,16 +89,14 @@ public class PGoodsRecordHibernateDao {
             query.setMaxResults(limit);
             list = query.list();
         } catch (Exception e) {
-
-        } finally {
-            session.close();
+            return Collections.EMPTY_LIST;
         }
 
         return list;
     }
 
     public void save(GoodsRecord goodsRecord) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         try {
             session.beginTransaction();
             session.save(goodsRecord);
@@ -108,14 +108,12 @@ public class PGoodsRecordHibernateDao {
             if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
                 session.getTransaction().commit();
             }
-
-            session.close();
         }
 
     }
 
     public int count(String sql, Map<String, Object> param, int offset, int limit) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         int count = 0;
         try {
             Query query = session.createQuery(sql);
@@ -125,17 +123,14 @@ public class PGoodsRecordHibernateDao {
             System.out.println("================" + query.toString());
             count = ((Number)query.uniqueResult()).intValue();
         } catch (Exception e) {
-
-        } finally {
-            session.close();
-
+            return count;
         }
 
         return count;
     }
 
     public StatictisModel statictisGoods(String sql, Map<String, Object> param) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         StatictisModel statictisModel = new StatictisModel();
         try {
             Query query = session.createQuery(sql);
@@ -155,16 +150,14 @@ public class PGoodsRecordHibernateDao {
                 statictisModel.setOldPrices((Double)res[3]);
             }
         } catch (Exception e) {
-
-        } finally {
-            session.close();
+            return statictisModel;
         }
 
         return statictisModel;
     }
 
     public void update(GoodsRecord goodsRecord) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         try {
             session.beginTransaction();
             session.update(goodsRecord);
@@ -177,14 +170,13 @@ public class PGoodsRecordHibernateDao {
                 session.getTransaction().commit();
             }
 
-            session.close();
         }
 
 
     }
 
     public void updateBatch(List<Long> ids, int value, String sql, Long userId) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         try {
             session.beginTransaction();
             Query query = session.createQuery(sql);
@@ -198,13 +190,11 @@ public class PGoodsRecordHibernateDao {
             if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
                 session.getTransaction().commit();
             }
-
-            session.close();
         }
     }
 
     public void updateExpress(List<Long> ids, String expressCode, String sql, Long userId) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         session.beginTransaction();
         try {
             Query query = session.createQuery(sql);
@@ -218,13 +208,11 @@ public class PGoodsRecordHibernateDao {
             if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
                 session.getTransaction().commit();
             }
-
-            session.close();
         }
     }
 
     public void delete(GoodsRecord goodsRecord) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         try {
             session.beginTransaction();
             session.delete(goodsRecord);
@@ -234,15 +222,13 @@ public class PGoodsRecordHibernateDao {
             if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
                 session.getTransaction().commit();
             }
-
-            session.close();
         }
 
 
     }
 
     public void deleteV2(List<Long> ids, Long userId) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         session.beginTransaction();
         try {
             Query query = session.createQuery("DELETE FROM GoodsRecord WHERE id in (:ids) and userId = :userId");
@@ -255,15 +241,13 @@ public class PGoodsRecordHibernateDao {
             if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
                 session.getTransaction().commit();
             }
-
-            session.close();
         }
 
 
     }
 
     public BizCurrentMonth getMonthStatistic(String sql, Long userId) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         BizCurrentMonth bizCurrentMonth = new BizCurrentMonth();
         try {
             Query query = session.createQuery(sql);
@@ -287,8 +271,6 @@ public class PGoodsRecordHibernateDao {
             }
         } catch (Exception e) {
 
-        } finally {
-            session.close();
         }
         return bizCurrentMonth;
     }

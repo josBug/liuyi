@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
+import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public class PUserInfoHibernateDao {
+public class PUserInfoHibernateDao extends HibernateDaoSupport {
 
     private SessionFactory sessionFactory;
 
@@ -27,15 +28,22 @@ public class PUserInfoHibernateDao {
     public void initSessionFactory() {
         Configuration config = new Configuration().configure();
         sessionFactory = config.buildSessionFactory();
+        super.setSessionFactory(sessionFactory);
     }
 
     @PreDestroy
     public void destorySession() {
-        sessionFactory.close();
+        if (!sessionFactory.isClosed()) {
+            sessionFactory.close();
+        }
+    }
+
+    private Session getCurrentSession() {
+        return this.getHibernateTemplate().getSessionFactory().getCurrentSession();
     }
 
     public String checkUserInfo(String userName, String passwd, String emailCode) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         String ksid = null;
         try {
             Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd and emailCode = :emailCode and expireEmailCodeTime > :expireEmailCodeTime");
@@ -62,14 +70,13 @@ public class PUserInfoHibernateDao {
             if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
                 session.getTransaction().commit();
             }
-            session.close();
         }
 
         return ksid;
     }
 
     public UserInfo checkKsid(String ksid) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         List<UserInfo> list = new ArrayList<>();
         try {
             Query query = session.createQuery("FROM UserInfo where session = :ksid");
@@ -82,8 +89,6 @@ public class PUserInfoHibernateDao {
             }
         } catch (Exception e) {
 
-        } finally {
-            session.close();
         }
 
 
@@ -91,7 +96,7 @@ public class PUserInfoHibernateDao {
     }
 
     public boolean checkLoginStatus(String userName, String ksid) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
 
         try {
             Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
@@ -119,8 +124,6 @@ public class PUserInfoHibernateDao {
             if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
                 session.getTransaction().commit();
             }
-
-            session.close();
         }
 
 
@@ -128,7 +131,7 @@ public class PUserInfoHibernateDao {
     }
 
     public void loginOut(String userName, String ksid) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
 
         try {
             Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
@@ -157,15 +160,13 @@ public class PUserInfoHibernateDao {
             if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
                 session.getTransaction().commit();
             }
-
-            session.close();
         }
 
 
     }
 
     public boolean registryUser(String userName, String passwd, String email) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
 
         try {
             Query query = session.createQuery("FROM UserInfo where userName = :userName");
@@ -193,15 +194,13 @@ public class PUserInfoHibernateDao {
             if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
                 session.getTransaction().commit();
             }
-
-            session.close();
         }
 
         return true;
     }
 
     public void updateEmailCode(String userName, String passwd, String emailCode) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
 
         try {
             Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
@@ -225,13 +224,11 @@ public class PUserInfoHibernateDao {
             if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
                 session.getTransaction().commit();
             }
-
-            session.close();
         }
     }
 
     public UserInfo getUserInfoByPasswd(String userName, String passwd) {
-        Session session = sessionFactory.openSession();
+        Session session = getCurrentSession();
         UserInfo userInfo = null;
         try {
             Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
@@ -245,9 +242,6 @@ public class PUserInfoHibernateDao {
 
             userInfo = list.get(0);
         } catch (Exception e) {
-
-        } finally {
-            session.close();
 
         }
 
