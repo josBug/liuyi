@@ -40,6 +40,9 @@ public class UserInfo {
     @Column(name="status")
     private int status;
 
+    @Column(name = "expire_email_code_time")
+    private LocalDateTime expireEmailCodeTime;
+
     @Column(name="created_at", insertable = false, updatable = false)
     @JsonFormat( pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
