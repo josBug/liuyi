@@ -9,6 +9,7 @@ import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -20,7 +21,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public class PUserInfoHibernateDao extends HibernateDaoSupport {
+@Transactional(readOnly=true)
+public class PUserInfoHibernateDao {
 
     private SessionFactory sessionFactory;
 
@@ -28,7 +30,6 @@ public class PUserInfoHibernateDao extends HibernateDaoSupport {
     public void initSessionFactory() {
         Configuration config = new Configuration().configure();
         sessionFactory = config.buildSessionFactory();
-        super.setSessionFactory(sessionFactory);
     }
 
     @PreDestroy
@@ -39,7 +40,7 @@ public class PUserInfoHibernateDao extends HibernateDaoSupport {
     }
 
     private Session getCurrentSession() {
-        return this.getHibernateTemplate().getSessionFactory().getCurrentSession();
+        return sessionFactory.getCurrentSession();
     }
 
     public String checkUserInfo(String userName, String passwd, String emailCode) {
@@ -242,7 +243,7 @@ public class PUserInfoHibernateDao extends HibernateDaoSupport {
 
             userInfo = list.get(0);
         } catch (Exception e) {
-
+            System.out.println(e.toString());
         }
 
         return userInfo;

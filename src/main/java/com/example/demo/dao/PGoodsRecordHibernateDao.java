@@ -10,6 +10,7 @@ import org.hibernate.query.Query;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
@@ -21,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class PGoodsRecordHibernateDao extends HibernateDaoSupport {
+@Transactional(readOnly=true)
+public class PGoodsRecordHibernateDao {
 
     private SessionFactory sessionFactory;
 
@@ -29,7 +31,6 @@ public class PGoodsRecordHibernateDao extends HibernateDaoSupport {
     public void initSessionFactory() {
         Configuration config = new Configuration().configure();
         sessionFactory = config.buildSessionFactory();
-        super.setSessionFactory(sessionFactory);
     }
 
     @PreDestroy
@@ -40,7 +41,7 @@ public class PGoodsRecordHibernateDao extends HibernateDaoSupport {
     }
 
     private Session getCurrentSession() {
-        return this.getHibernateTemplate().getSessionFactory().getCurrentSession();
+        return sessionFactory.getCurrentSession();
     }
     public List<GoodsRecord> query(String sql, Map<String, Object> param, int offset, int limit) {
         Session session = getCurrentSession();
