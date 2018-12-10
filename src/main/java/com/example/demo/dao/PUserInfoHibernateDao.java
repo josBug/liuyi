@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -37,10 +38,11 @@ public class PUserInfoHibernateDao {
         Session session = sessionFactory.openSession();
         String ksid = null;
         try {
-            Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd and emailCode = :emailCode");
+            Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd and emailCode = :emailCode and expireEmailCodeTime > :expireEmailCodeTime");
             query.setParameter("userName", userName);
             query.setParameter("passwd", passwd);
             query.setParameter("emailCode", emailCode);
+            query.setParameter("expireEmailCodeTime", LocalDateTime.now());
             query.setMaxResults(1);
             List<UserInfo> list = query.list();
             if (list.size() != 1) {
@@ -213,6 +215,7 @@ public class PUserInfoHibernateDao {
 
             UserInfo userInfo = list.get(0);
             userInfo.setEmailCode(emailCode);
+            userInfo.setExpireEmailCodeTime(LocalDateTime.now().plusSeconds(60));
 
             session.beginTransaction();
             session.update(userInfo);
