@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class PUserInfoHibernateDao {
 
     @Autowired
@@ -36,29 +36,23 @@ public class PUserInfoHibernateDao {
     public String checkUserInfo(String userName, String passwd, String emailCode) {
         Session session = getCurrentSession();
         String ksid = null;
-        try {
-            Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd and emailCode = :emailCode and expireEmailCodeTime > :expireEmailCodeTime");
-            query.setParameter("userName", userName);
-            query.setParameter("passwd", passwd);
-            query.setParameter("emailCode", emailCode);
-            query.setParameter("expireEmailCodeTime", LocalDateTime.now());
-            query.setMaxResults(1);
-            List<UserInfo> list = query.list();
-            if (list.size() != 1) {
-                return null;
-            }
-
-            UUID uuid=UUID.randomUUID();
-            ksid = uuid.toString();
-            UserInfo userInfo = list.get(0);
-            userInfo.setSession(ksid);
-            userInfo.setStatus(1);
-            session.update(userInfo);
-        } catch (Exception e) {
-
-        } finally {
+        Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd and emailCode = :emailCode and expireEmailCodeTime > :expireEmailCodeTime");
+        query.setParameter("userName", userName);
+        query.setParameter("passwd", passwd);
+        query.setParameter("emailCode", emailCode);
+        query.setParameter("expireEmailCodeTime", LocalDateTime.now());
+        query.setMaxResults(1);
+        List<UserInfo> list = query.list();
+        if (list.size() != 1) {
+            return null;
         }
 
+        UUID uuid=UUID.randomUUID();
+        ksid = uuid.toString();
+        UserInfo userInfo = list.get(0);
+        userInfo.setSession(ksid);
+        userInfo.setStatus(1);
+        session.update(userInfo);
         return ksid;
     }
 
@@ -75,7 +69,7 @@ public class PUserInfoHibernateDao {
                 return null;
             }
         } catch (Exception e) {
-
+            return null;
         }
 
 
@@ -84,120 +78,92 @@ public class PUserInfoHibernateDao {
 
     public boolean checkLoginStatus(String userName, String ksid) {
         Session session = getCurrentSession();
+        Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
+        query.setParameter("userName", userName);
+        query.setParameter("ksid", ksid);
+        query.setMaxResults(1);
+        List<UserInfo> list = query.list();
 
-        try {
-            Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
-            query.setParameter("userName", userName);
-            query.setParameter("ksid", ksid);
-            query.setMaxResults(1);
-            List<UserInfo> list = query.list();
-
-            if (list.size() != 1) {
-                return false;
-            }
-
-            UserInfo userInfo = list.get(0);
-            if (userInfo.getStatus() == 1) {
-                return false;
-            }
-
-            userInfo.setStatus(1);
-
-            session.update(userInfo);
-        } catch (Exception e) {
-
-        } finally {
-
+        if (list.size() != 1) {
+            return false;
         }
 
+        UserInfo userInfo = list.get(0);
+        if (userInfo.getStatus() == 1) {
+            return false;
+        }
 
+        userInfo.setStatus(1);
+
+        session.update(userInfo);
         return true;
     }
 
     public void loginOut(String userName, String ksid) {
         Session session = getCurrentSession();
-
-        try {
-            Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
-            query.setParameter("userName", userName);
-            query.setParameter("ksid", ksid);
-            query.setMaxResults(1);
-            List<UserInfo> list = query.list();
-            if (list.size() != 1) {
-                return;
-            }
-
-            UserInfo userInfo = list.get(0);
-            if (userInfo.getStatus() == 0) {
-                return;
-            }
-
-            userInfo.setSession("");
-            userInfo.setStatus(0);
-            userInfo.setEmailCode("");
-
-            session.update(userInfo);
-        } catch (Exception e) {
-
-        } finally {
-
+        Query query = session.createQuery("FROM UserInfo where userName = :userName and session = :ksid");
+        query.setParameter("userName", userName);
+        query.setParameter("ksid", ksid);
+        query.setMaxResults(1);
+        List<UserInfo> list = query.list();
+        if (list.size() != 1) {
+            return;
         }
 
+        UserInfo userInfo = list.get(0);
+        if (userInfo.getStatus() == 0) {
+            return;
+        }
+
+        userInfo.setSession("");
+        userInfo.setStatus(0);
+        userInfo.setEmailCode("");
+
+        session.update(userInfo);
 
     }
 
     public boolean registryUser(String userName, String passwd, String email) {
         Session session = getCurrentSession();
-
-        try {
-            Query query = session.createQuery("FROM UserInfo where userName = :userName");
-            query.setParameter("userName", userName);
-            query.setMaxResults(1);
-            List<UserInfo> list = query.list();
-            if (list.size() != 0) {
-                return false;
-            }
-
-            UserInfo userInfo = new UserInfo();
-            userInfo.setUserName(userName);
-            userInfo.setPasswd(passwd);
-            userInfo.setEmail(email);
-            userInfo.setSession("");
-            userInfo.setStatus(0);
-            userInfo.setEmailCode("");
-
-
-            session.save(userInfo);
-        } catch (Exception e) {
-
-        } finally {
-
+        Query query = session.createQuery("FROM UserInfo where userName = :userName");
+        query.setParameter("userName", userName);
+        query.setMaxResults(1);
+        List<UserInfo> list = query.list();
+        if (list.size() != 0) {
+            return false;
         }
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserName(userName);
+        userInfo.setPasswd(passwd);
+        userInfo.setEmail(email);
+        userInfo.setSession("");
+        userInfo.setStatus(0);
+        userInfo.setEmailCode("");
+
+
+        session.save(userInfo);
+
 
         return true;
     }
 
     public void updateEmailCode(String userName, String passwd, String emailCode) {
         Session session = getCurrentSession();
-
-        try {
-            Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
-            query.setParameter("userName", userName);
-            query.setParameter("passwd", passwd);
-            query.setMaxResults(1);
-            List<UserInfo> list = query.list();
-            if (list.size() != 1) {
-                return;
-            }
-
-            UserInfo userInfo = list.get(0);
-            userInfo.setEmailCode(emailCode);
-            userInfo.setExpireEmailCodeTime(LocalDateTime.now().plusSeconds(60));
-            session.update(userInfo);
-        } catch (Exception e) {
-
-        } finally {
+        Query query = session.createQuery("FROM UserInfo where userName = :userName and passwd = :passwd");
+        query.setParameter("userName", userName);
+        query.setParameter("passwd", passwd);
+        query.setMaxResults(1);
+        List<UserInfo> list = query.list();
+        if (list.size() != 1) {
+            return;
         }
+
+        UserInfo userInfo = list.get(0);
+        userInfo.setEmailCode(emailCode);
+        userInfo.setExpireEmailCodeTime(LocalDateTime.now().plusSeconds(60));
+        session.update(userInfo);
+
     }
 
     public UserInfo getUserInfoByPasswd(String userName, String passwd) {
