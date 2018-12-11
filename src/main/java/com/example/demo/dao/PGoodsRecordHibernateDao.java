@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,23 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-@Transactional(readOnly=true)
+@Transactional
 public class PGoodsRecordHibernateDao {
 
+    @Autowired
     private SessionFactory sessionFactory;
-
-    @PostConstruct
-    public void initSessionFactory() {
-        Configuration config = new Configuration().configure();
-        sessionFactory = config.buildSessionFactory();
-    }
-
-    @PreDestroy
-    public void destorySession() {
-        if (!sessionFactory.isClosed()) {
-            sessionFactory.close();
-        }
-    }
 
     private Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
@@ -99,16 +88,13 @@ public class PGoodsRecordHibernateDao {
     public void save(GoodsRecord goodsRecord) {
         Session session = getCurrentSession();
         try {
-            session.beginTransaction();
             session.save(goodsRecord);
             session.flush();
             session.evict(goodsRecord);
         } catch (Exception e) {
             return;
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
+
         }
 
     }
@@ -160,16 +146,13 @@ public class PGoodsRecordHibernateDao {
     public void update(GoodsRecord goodsRecord) {
         Session session = getCurrentSession();
         try {
-            session.beginTransaction();
             session.update(goodsRecord);
             session.flush();
             session.evict(goodsRecord);
         } catch (Exception e) {
             return;
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
+
 
         }
 
@@ -179,7 +162,6 @@ public class PGoodsRecordHibernateDao {
     public void updateBatch(List<Long> ids, int value, String sql, Long userId) {
         Session session = getCurrentSession();
         try {
-            session.beginTransaction();
             Query query = session.createQuery(sql);
             query.setParameter("value", value);
             query.setParameter("ids", ids);
@@ -188,15 +170,12 @@ public class PGoodsRecordHibernateDao {
         } catch (Exception e) {
             return;
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
+
         }
     }
 
     public void updateExpress(List<Long> ids, String expressCode, String sql, Long userId) {
         Session session = getCurrentSession();
-        session.beginTransaction();
         try {
             Query query = session.createQuery(sql);
             query.setParameter("ids", ids);
@@ -206,23 +185,18 @@ public class PGoodsRecordHibernateDao {
         } catch (Exception e) {
             return;
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
+
         }
     }
 
     public void delete(GoodsRecord goodsRecord) {
         Session session = getCurrentSession();
         try {
-            session.beginTransaction();
             session.delete(goodsRecord);
         } catch (Exception e) {
             return;
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
+
         }
 
 
@@ -230,7 +204,6 @@ public class PGoodsRecordHibernateDao {
 
     public void deleteV2(List<Long> ids, Long userId) {
         Session session = getCurrentSession();
-        session.beginTransaction();
         try {
             Query query = session.createQuery("DELETE FROM GoodsRecord WHERE id in (:ids) and userId = :userId");
             query.setParameter("ids", ids);
@@ -239,9 +212,7 @@ public class PGoodsRecordHibernateDao {
         }catch (Exception e) {
             return;
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
+
         }
 
 

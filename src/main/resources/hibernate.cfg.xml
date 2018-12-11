@@ -12,7 +12,7 @@
         <property name="connection.password">123</property>
         <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name="connection.url">jdbc:mysql://127.0.0.1:3306/mylove?useunicode=true&amp;characterEncoding=utf8</property>
-
+        <property name="connection.autocommit">true</property>
         <!-- 配置 hibernate 的基本信息 -->
         <!-- hibernate 所使用的数据库方言 -->
         <property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>

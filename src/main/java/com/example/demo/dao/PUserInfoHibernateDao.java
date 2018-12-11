@@ -6,9 +6,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -21,23 +23,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-@Transactional(readOnly=true)
+@Transactional
 public class PUserInfoHibernateDao {
 
+    @Autowired
     private SessionFactory sessionFactory;
-
-    @PostConstruct
-    public void initSessionFactory() {
-        Configuration config = new Configuration().configure();
-        sessionFactory = config.buildSessionFactory();
-    }
-
-    @PreDestroy
-    public void destorySession() {
-        if (!sessionFactory.isClosed()) {
-            sessionFactory.close();
-        }
-    }
 
     private Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
@@ -63,14 +53,10 @@ public class PUserInfoHibernateDao {
             UserInfo userInfo = list.get(0);
             userInfo.setSession(ksid);
             userInfo.setStatus(1);
-            session.beginTransaction();
             session.update(userInfo);
         } catch (Exception e) {
 
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
         }
 
         return ksid;
@@ -117,14 +103,11 @@ public class PUserInfoHibernateDao {
 
             userInfo.setStatus(1);
 
-            session.beginTransaction();
             session.update(userInfo);
         } catch (Exception e) {
 
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
+
         }
 
 
@@ -153,14 +136,11 @@ public class PUserInfoHibernateDao {
             userInfo.setStatus(0);
             userInfo.setEmailCode("");
 
-            session.beginTransaction();
             session.update(userInfo);
         } catch (Exception e) {
 
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
+
         }
 
 
@@ -187,14 +167,11 @@ public class PUserInfoHibernateDao {
             userInfo.setEmailCode("");
 
 
-            session.beginTransaction();
             session.save(userInfo);
         } catch (Exception e) {
 
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
+
         }
 
         return true;
@@ -216,15 +193,10 @@ public class PUserInfoHibernateDao {
             UserInfo userInfo = list.get(0);
             userInfo.setEmailCode(emailCode);
             userInfo.setExpireEmailCodeTime(LocalDateTime.now().plusSeconds(60));
-
-            session.beginTransaction();
             session.update(userInfo);
         } catch (Exception e) {
 
         } finally {
-            if (session.getTransaction().getStatus() == TransactionStatus.ACTIVE) {
-                session.getTransaction().commit();
-            }
         }
     }
 
