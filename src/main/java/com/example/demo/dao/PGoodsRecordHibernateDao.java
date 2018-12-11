@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class PGoodsRecordHibernateDao {
 
     @Autowired
@@ -87,16 +87,9 @@ public class PGoodsRecordHibernateDao {
 
     public void save(GoodsRecord goodsRecord) {
         Session session = getCurrentSession();
-        try {
-            session.save(goodsRecord);
-            session.flush();
-            session.evict(goodsRecord);
-        } catch (Exception e) {
-            return;
-        } finally {
-
-        }
-
+        session.save(goodsRecord);
+        session.flush();
+        session.evict(goodsRecord);
     }
 
     public int count(String sql, Map<String, Object> param, int offset, int limit) {
@@ -145,77 +138,42 @@ public class PGoodsRecordHibernateDao {
 
     public void update(GoodsRecord goodsRecord) {
         Session session = getCurrentSession();
-        try {
-            session.update(goodsRecord);
-            session.flush();
-            session.evict(goodsRecord);
-        } catch (Exception e) {
-            return;
-        } finally {
-
-
-        }
-
-
+        session.update(goodsRecord);
+        session.flush();
+        session.evict(goodsRecord);
     }
 
     public void updateBatch(List<Long> ids, int value, String sql, Long userId) {
         Session session = getCurrentSession();
-        try {
-            Query query = session.createQuery(sql);
-            query.setParameter("value", value);
-            query.setParameter("ids", ids);
-            query.setParameter("userId", userId);
-            query.executeUpdate();
-        } catch (Exception e) {
-            return;
-        } finally {
+        Query query = session.createQuery(sql);
+        query.setParameter("value", value);
+        query.setParameter("ids", ids);
+        query.setParameter("userId", userId);
+        query.executeUpdate();
 
-        }
     }
 
     public void updateExpress(List<Long> ids, String expressCode, String sql, Long userId) {
         Session session = getCurrentSession();
-        try {
-            Query query = session.createQuery(sql);
-            query.setParameter("ids", ids);
-            query.setParameter("expressCode", expressCode);
-            query.setParameter("userId", userId);
-            query.executeUpdate();
-        } catch (Exception e) {
-            return;
-        } finally {
+        Query query = session.createQuery(sql);
+        query.setParameter("ids", ids);
+        query.setParameter("expressCode", expressCode);
+        query.setParameter("userId", userId);
+        query.executeUpdate();
 
-        }
     }
 
     public void delete(GoodsRecord goodsRecord) {
         Session session = getCurrentSession();
-        try {
-            session.delete(goodsRecord);
-        } catch (Exception e) {
-            return;
-        } finally {
-
-        }
-
-
+        session.delete(goodsRecord);
     }
 
     public void deleteV2(List<Long> ids, Long userId) {
         Session session = getCurrentSession();
-        try {
-            Query query = session.createQuery("DELETE FROM GoodsRecord WHERE id in (:ids) and userId = :userId");
-            query.setParameter("ids", ids);
-            query.setParameter("userId",userId);
-            query.executeUpdate();
-        }catch (Exception e) {
-            return;
-        } finally {
-
-        }
-
-
+        Query query = session.createQuery("DELETE FROM GoodsRecord WHERE id in (:ids) and userId = :userId");
+        query.setParameter("ids", ids);
+        query.setParameter("userId",userId);
+        query.executeUpdate();
     }
 
     public BizCurrentMonth getMonthStatistic(String sql, Long userId) {
