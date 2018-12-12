@@ -24,14 +24,18 @@ import java.util.Map;
 
 @Repository
 @Transactional(rollbackFor = Exception.class)
-public class PGoodsRecordHibernateDao {
+public class PGoodsRecordHibernateDao extends HibernateDaoSupport{
+
 
     @Autowired
-    private SessionFactory sessionFactory;
+    public void setHibernateTemplate(SessionFactory sessionFactory) {
+        super.setSessionFactory(sessionFactory);
+    }
 
     private Session getCurrentSession() {
-        return sessionFactory.getCurrentSession();
+        return this.getHibernateTemplate().getSessionFactory().getCurrentSession();
     }
+
     public List<GoodsRecord> query(String sql, Map<String, Object> param, int offset, int limit) {
         Session session = getCurrentSession();
         List<GoodsRecord> list = new ArrayList<>();

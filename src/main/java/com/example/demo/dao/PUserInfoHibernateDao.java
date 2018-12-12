@@ -24,13 +24,15 @@ import java.util.UUID;
 
 @Repository
 @Transactional(rollbackFor = Exception.class)
-public class PUserInfoHibernateDao {
+public class PUserInfoHibernateDao extends HibernateDaoSupport{
 
     @Autowired
-    private SessionFactory sessionFactory;
+    public void setHibernateTemplate(SessionFactory sessionFactory) {
+        super.setSessionFactory(sessionFactory);
+    }
 
     private Session getCurrentSession() {
-        return sessionFactory.getCurrentSession();
+        return this.getHibernateTemplate().getSessionFactory().getCurrentSession();
     }
 
     public String checkUserInfo(String userName, String passwd, String emailCode) {
