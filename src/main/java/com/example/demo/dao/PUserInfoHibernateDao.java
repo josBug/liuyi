@@ -186,4 +186,24 @@ public class PUserInfoHibernateDao {
 
         return userInfo;
     }
+
+    public String getEmail(String tempSession) {
+        Session session = getCurrentSession();
+        UserInfo userInfo = null;
+        try {
+            Query query = session.createQuery("FROM UserInfo where session = :tempSession");
+            query.setParameter("tempSession", tempSession);
+            query.setMaxResults(1);
+            List<UserInfo> list = query.list();
+            if (list.size() != 1) {
+                return "";
+            }
+
+            userInfo = list.get(0);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+
+        return userInfo.getEmail();
+    }
 }

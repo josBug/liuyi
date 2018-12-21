@@ -223,4 +223,15 @@ public class UserController {
 
         return msg;
     }
+
+    @RequestMapping(value = "/get/email",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public ResponseDemo getEmail(@RequestBody LYopRequest lYopRequest) {
+        ResponseDemo responseDemo = new ResponseDemo();
+        String email = pUserInfoHibernateDao.getEmail(lYopRequest.getSession());
+        responseDemo.setCode(200);
+        responseDemo.setResult(email);
+        return responseDemo;
+    }
+
+
 }

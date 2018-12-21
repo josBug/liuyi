@@ -34,6 +34,12 @@ public class UserInfo {
     @Column(name="email_code")
     private String emailCode;
 
+    @Column(name="password_email_code")
+    private String passwordEmailCode;
+
+    @Column(name="expire_password_email_code")
+    private LocalDateTime expirePasswordEmailCode;
+
     @Column(name="session")
     private String session;
 
