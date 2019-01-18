@@ -5,6 +5,7 @@ import com.example.demo.dao.PGoodsRecordHibernateDao;
 import com.example.demo.entity.OperationPlatform;
 import com.example.demo.entity.OperationType;
 import com.example.demo.fragment.OperationFragment;
+import com.example.demo.map.GoodsRecordMapperDao;
 import com.example.demo.mode.GoodsRecord;
 import com.example.demo.stuct.StatictisModel;
 import com.example.demo.stuct.*;
@@ -29,6 +30,9 @@ public class OperationController {
 
     @Autowired
     private OperationFragment operationFragment;
+
+    @Autowired
+    private GoodsRecordMapperDao goodsRecordMapperDao;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -150,6 +154,12 @@ public class OperationController {
             return pGoodsRecordHibernateDao.statictisGoods(sql, param);
         }
         return new StatictisModel();
+    }
+
+    @RequestMapping(value = "/get/mapper",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public GoodsRecord getMapperGoods(@RequestBody LYopRequest lYopRequest) {
+        Integer id = (Integer) lYopRequest.getObject();
+        return goodsRecordMapperDao.getByIdByMapper(Long.valueOf(id), lYopRequest.getUserId());
     }
 
     @RequestMapping(value = "/update",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)

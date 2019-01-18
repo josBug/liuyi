@@ -32,18 +32,18 @@ public class SessionAopServiceImpl{
 
     @Before("execuStart()")
     public void checkSession(JoinPoint joinPoint) throws Exception {
-        System.out.println("-------------------=============");
-        Object[] objects = joinPoint.getArgs();
-        LYopRequest lYopRequest = mapper.convertValue(objects[0], mapper.constructType(LYopRequest.class));
-        if (null == lYopRequest.getSession() || lYopRequest.getSession().isEmpty()) {
-            throw new Exception("session is null");
-        }
-        UserInfo userInfo = pUserInfoHibernateDao.checkKsid(lYopRequest.getSession());
-        if (userInfo == null || userInfo.getUserName() == null || userInfo.getUserName().isEmpty()) {
-            throw new Exception("请重新登录");
-        }
-        lYopRequest.setUserId(userInfo.getId());
-        lYopRequest.setUserName(userInfo.getUserName());
-        lYopRequest.setEmail(userInfo.getEmail());
+//        System.out.println("-------------------=============");
+//        Object[] objects = joinPoint.getArgs();
+//        LYopRequest lYopRequest = mapper.convertValue(objects[0], mapper.constructType(LYopRequest.class));
+//        if (null == lYopRequest.getSession() || lYopRequest.getSession().isEmpty()) {
+//            throw new Exception("session is null");
+//        }
+//        UserInfo userInfo = pUserInfoHibernateDao.checkKsid(lYopRequest.getSession());
+//        if (userInfo == null || userInfo.getUserName() == null || userInfo.getUserName().isEmpty()) {
+//            throw new Exception("请重新登录");
+//        }
+//        lYopRequest.setUserId(userInfo.getId());
+//        lYopRequest.setUserName(userInfo.getUserName());
+//        lYopRequest.setEmail(userInfo.getEmail());
     }
 }
