@@ -159,7 +159,10 @@ public class OperationController {
     @RequestMapping(value = "/get/mapper",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
     public GoodsRecord getMapperGoods(@RequestBody LYopRequest lYopRequest) {
         Integer id = (Integer) lYopRequest.getObject();
-        return goodsRecordMapperDao.getByIdByMapper(Long.valueOf(id), lYopRequest.getUserId());
+        GoodsRecord goodsRecord = new GoodsRecord();
+        goodsRecord.setId(Long.valueOf(id));
+        goodsRecord.setUserId(lYopRequest.getUserId());
+        return goodsRecordMapperDao.getByIdByMapperSelectProviderV2(goodsRecord);
     }
 
     @RequestMapping(value = "/update",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)

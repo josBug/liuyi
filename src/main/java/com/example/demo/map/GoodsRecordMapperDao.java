@@ -1,6 +1,7 @@
 package com.example.demo.map;
 
 import com.example.demo.mode.GoodsRecord;
+import com.example.demo.stuct.GoodsRecordProvider;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 
@@ -30,4 +31,12 @@ public interface GoodsRecordMapperDao {
             @Result(property = "userId", column = "user_id", javaType = Long.class, jdbcType = JdbcType.BIGINT)
     })
     public GoodsRecord getByIdByMapper(@Param("id") Long id, @Param("userId") Long userId);
+
+    @SelectProvider(type = GoodsRecordProvider.class, method = "getByIdByMapperSelectProvider")
+    @ResultMap("goodsReCord")
+    public GoodsRecord getByIdByMapperSelectProvider(@Param("id") Long id, @Param("userId") Long userId);
+
+    @SelectProvider(type = GoodsRecordProvider.class, method = "getByIdByMapperSelectProviderV2")
+    @ResultMap("goodsReCord")
+    public GoodsRecord getByIdByMapperSelectProviderV2(@Param("goodsRecord") GoodsRecord goodsRecord);
 }
