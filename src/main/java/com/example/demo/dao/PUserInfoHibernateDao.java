@@ -186,4 +186,44 @@ public class PUserInfoHibernateDao {
 
         return userInfo;
     }
+
+    public String getEmail(String tempSession) {
+        Session session = getCurrentSession();
+        UserInfo userInfo = null;
+        try {
+            Query query = session.createQuery("FROM UserInfo where session = :tempSession");
+            query.setParameter("tempSession", tempSession);
+            query.setMaxResults(1);
+            List<UserInfo> list = query.list();
+            if (list.size() != 1) {
+                return "";
+            }
+
+            userInfo = list.get(0);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+
+        return userInfo.getEmail();
+    }
+
+    public Boolean updateNewPassword(String userName, String oldPasswd, String newPasswd) {
+        Session session = getCurrentSession();
+        UserInfo userInfo = null;
+
+        try {
+            Query query = session.createQuery("update UserInfo set passwd = :newPasswd where userName = :userName and passwd = :oldPasswd");
+            query.setParameter("newPasswd", newPasswd);
+            query.setParameter("userName", userName);
+            query.setParameter("oldPasswd", oldPasswd);
+            int res = query.executeUpdate();
+            if (res <= 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
 }
