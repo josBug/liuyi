@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dao.PUserInfoHibernateDao;
+import com.example.demo.entity.PasswordDto;
 import com.example.demo.fragment.OperationFragment;
 import com.example.demo.mode.UserInfo;
 import com.example.demo.stuct.CheckUserInfo;
@@ -233,5 +234,18 @@ public class UserController {
         return responseDemo;
     }
 
+    @RequestMapping(value = "/update/passwd",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public ResponseDemo updateNewPassword(@RequestBody LYopRequest lYopRequest) {
+        ResponseDemo responseDemo = new ResponseDemo();
+        PasswordDto passwordDto = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(PasswordDto.class));
+
+        Boolean res = pUserInfoHibernateDao.updateNewPassword(lYopRequest.getUserName(), passwordDto.getOldPasswd(), passwordDto.getNewPasswd());
+        if (res) {
+            responseDemo.setCode(200);
+        } else {
+            responseDemo.setCode(500);
+        }
+        return responseDemo;
+    }
 
 }

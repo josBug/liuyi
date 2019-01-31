@@ -206,4 +206,24 @@ public class PUserInfoHibernateDao {
 
         return userInfo.getEmail();
     }
+
+    public Boolean updateNewPassword(String userName, String oldPasswd, String newPasswd) {
+        Session session = getCurrentSession();
+        UserInfo userInfo = null;
+
+        try {
+            Query query = session.createQuery("update UserInfo set passwd = :newPasswd where userName = :userName and passwd = :oldPasswd");
+            query.setParameter("newPasswd", newPasswd);
+            query.setParameter("userName", userName);
+            query.setParameter("oldPasswd", oldPasswd);
+            int res = query.executeUpdate();
+            if (res <= 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
 }
