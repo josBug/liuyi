@@ -205,6 +205,8 @@ public class OperationController {
         if (operationRequest != null) {
             List<GoodsRecord> goodsRecords = operationRequest.getGoodsRecords();
             goodsRecords.stream().forEach(goodsRecord -> {
+                goodsRecord.setSellPrice(new BigDecimal(goodsRecord.getSellPrice()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                goodsRecord.setOldPrice(new BigDecimal(goodsRecord.getOldPrice()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 goodsRecord.setCountPrice(new BigDecimal(goodsRecord.getSellPrice() * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 goodsRecord.setTip(new BigDecimal(goodsRecord.getSellPrice()).subtract(new BigDecimal(goodsRecord.getOldPrice())).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 goodsRecord.setUserName(lYopRequest.getUserName());
