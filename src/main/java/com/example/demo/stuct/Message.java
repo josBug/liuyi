@@ -15,6 +15,8 @@ public class Message {
 
     private double price;
 
+    private double sellPrice;
+
     private String names;
 
     private double tip;
