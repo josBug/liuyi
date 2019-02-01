@@ -49,6 +49,9 @@ public class GoodsRecord {
     @Column(name="count_price")
     private double countPrice;
 
+    @Column(name="sell_price")
+    private double sellPrice;
+
     @Column(name="is_pay")
     private int isPay;
 

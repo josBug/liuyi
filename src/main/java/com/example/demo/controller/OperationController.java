@@ -47,11 +47,15 @@ public class OperationController {
                 goodsRecord.setGoodsName(message.getGoods());
                 goodsRecord.setCode(message.getCode());
                 goodsRecord.setColor(message.getColor());
-                goodsRecord.setCountPrice(new BigDecimal((message.getPrice() + message.getTip()) * message.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                goodsRecord.setSellPrice(new BigDecimal(message.getSellPrice()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                goodsRecord.setCountPrice(new BigDecimal(message.getSellPrice() * message.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 goodsRecord.setName(message.getNames());
                 goodsRecord.setOldPrice(new BigDecimal(message.getPrice()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 goodsRecord.setSend(message.getSend());
-                goodsRecord.setTip(new BigDecimal(message.getTip()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                if (goodsRecord.getSellPrice() < goodsRecord.getOldPrice()) {
+                    return;
+                }
+                goodsRecord.setTip(new BigDecimal(goodsRecord.getSellPrice()).subtract(new BigDecimal(goodsRecord.getOldPrice())).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 goodsRecord.setRemark(message.getRemark());
                 goodsRecord.setUserName(lYopRequest.getUserName());
                 goodsRecord.setIsPay(message.getIsPay());
@@ -85,7 +89,7 @@ public class OperationController {
     }
 
     private Boolean checkParam(GoodsRecord message) {
-        if (message.getAmount() < 0 || message.getOldPrice() < 0 || message.getTip() < 0
+        if (message.getAmount() < 0 || message.getOldPrice() < 0 || message.getTip() < 0 || message.getSellPrice() < 0
                 || message.getCode() == null || message.getColor() == null || message.getGoodsName() == null
                 || message.getGoodsName().isEmpty() || message.getName() == null || message.getName().isEmpty()
                 || message.getSource() == null) {
@@ -158,7 +162,12 @@ public class OperationController {
         ResponseDemo responseDemo = new ResponseDemo();
         if (operationRequest != null) {
             GoodsRecord goodsRecord = operationRequest.getGoodsRecords().get(0);
-            goodsRecord.setCountPrice(new BigDecimal((goodsRecord.getOldPrice() + goodsRecord.getTip()) * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+            if (goodsRecord.getSellPrice() < goodsRecord.getOldPrice()) {
+                responseDemo.setCode(500);
+                responseDemo.setResult("failed");
+                return responseDemo;
+            }
+            goodsRecord.setCountPrice(new BigDecimal(goodsRecord.getSellPrice() * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
             GoodsRecord oldGoodsRecord = pGoodsRecordHibernateDao.getById(goodsRecord.getId(), lYopRequest.getUserId());
             if (oldGoodsRecord == null) {
                 throw new ServiceNotFoundException("获取信息失败");
@@ -169,10 +178,11 @@ public class OperationController {
                 return responseDemo;
             }
             oldGoodsRecord.setRemark(goodsRecord.getRemark());
-            oldGoodsRecord.setTip(goodsRecord.getTip());
-            oldGoodsRecord.setOldPrice(goodsRecord.getOldPrice());
+            oldGoodsRecord.setTip(new BigDecimal(goodsRecord.getSellPrice()).subtract(new BigDecimal(goodsRecord.getOldPrice())).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+            oldGoodsRecord.setOldPrice(new BigDecimal(goodsRecord.getOldPrice()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
             oldGoodsRecord.setName(goodsRecord.getName());
             oldGoodsRecord.setCountPrice(goodsRecord.getCountPrice());
+            oldGoodsRecord.setSellPrice(new BigDecimal(goodsRecord.getSellPrice()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
             oldGoodsRecord.setColor(goodsRecord.getColor());
             oldGoodsRecord.setCode(goodsRecord.getCode());
             oldGoodsRecord.setGoodsName(goodsRecord.getGoodsName());
@@ -195,7 +205,10 @@ public class OperationController {
         if (operationRequest != null) {
             List<GoodsRecord> goodsRecords = operationRequest.getGoodsRecords();
             goodsRecords.stream().forEach(goodsRecord -> {
-                goodsRecord.setCountPrice(new BigDecimal((goodsRecord.getOldPrice() + goodsRecord.getTip()) * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                goodsRecord.setSellPrice(new BigDecimal(goodsRecord.getSellPrice()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                goodsRecord.setOldPrice(new BigDecimal(goodsRecord.getOldPrice()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                goodsRecord.setCountPrice(new BigDecimal(goodsRecord.getSellPrice() * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                goodsRecord.setTip(new BigDecimal(goodsRecord.getSellPrice()).subtract(new BigDecimal(goodsRecord.getOldPrice())).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 goodsRecord.setUserName(lYopRequest.getUserName());
                 pGoodsRecordHibernateDao.update(goodsRecord);
             });
