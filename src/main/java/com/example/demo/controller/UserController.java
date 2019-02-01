@@ -238,8 +238,11 @@ public class UserController {
     public ResponseDemo updateNewPassword(@RequestBody LYopRequest lYopRequest) {
         ResponseDemo responseDemo = new ResponseDemo();
         PasswordDto passwordDto = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(PasswordDto.class));
-
-        Boolean res = pUserInfoHibernateDao.updateNewPassword(lYopRequest.getUserName(), passwordDto.getOldPasswd(), passwordDto.getNewPasswd());
+        if (!operationFragment.checkParamValid(passwordDto.getNewPasswd())) {
+            responseDemo.setCode(500);
+            return responseDemo;
+        }
+        Boolean res = pUserInfoHibernateDao.updateNewPassword(passwordDto.getUserName(), passwordDto.getOldPasswd(), passwordDto.getNewPasswd());
         if (res) {
             responseDemo.setCode(200);
         } else {
