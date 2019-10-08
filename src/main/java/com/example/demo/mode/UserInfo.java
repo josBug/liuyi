@@ -31,6 +31,9 @@ public class UserInfo {
     @Column(name="email")
     private String email;
 
+    @Column(name = "nick_name")
+    private String nickName;
+
     @Column(name="email_code")
     private String emailCode;
 
@@ -54,4 +57,16 @@ public class UserInfo {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat( pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateAt;
+
+    @Column(name = "expire_session_time")
+    private LocalDateTime expireSessionTime;
+
+    @Column(name = "session_key")
+    private String sessionKey;
+
+    @Column(name = "wx_open_id")
+    private String wxOpenId;
+
+    @Column(name = "wx_union_id")
+    private String wxUnionId;
 }

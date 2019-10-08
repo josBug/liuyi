@@ -1,21 +1,24 @@
 package com.example.demo.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.example.demo.constant.WxConstant;
 import com.example.demo.dao.PUserInfoHibernateDao;
 import com.example.demo.entity.PasswordDto;
 import com.example.demo.fragment.OperationFragment;
 import com.example.demo.mode.UserInfo;
-import com.example.demo.stuct.CheckUserInfo;
-import com.example.demo.stuct.LYopRequest;
-import com.example.demo.stuct.ResponseDemo;
+import com.example.demo.stuct.*;
 import com.example.demo.util.PassWordUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
+import org.thymeleaf.util.StringUtils;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -31,6 +34,9 @@ public class UserController {
     @Autowired
     private PUserInfoHibernateDao pUserInfoHibernateDao;
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Autowired
     private OperationFragment operationFragment;
@@ -251,4 +257,37 @@ public class UserController {
         return responseDemo;
     }
 
+    @RequestMapping(value = "/wx/login",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public WxResponseUserInfo wxLogin(@RequestBody LYopRequest lYopRequest) throws Exception {
+        WxUserInfo wxUserInfo = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(WxUserInfo.class));
+        if (wxUserInfo == null) {
+            throw new Exception("用户信息不足");
+        }
+
+        if (StringUtils.isEmpty(wxUserInfo.getCode())) {
+            throw new Exception("用户信息不足");
+        }
+
+        String wxUrl = String.format(WxConstant.WX_AUTH_SESSION_URL, WxConstant.WX_APPID, WxConstant.WX_SECRET, wxUserInfo.getCode());
+        ResponseEntity<String> forEntity = restTemplate.getForEntity(wxUrl, String.class);
+        String body = forEntity.getBody();
+        WxAuthRes wxAuthRes = JSONObject.parseObject(body, WxAuthRes.class);
+        if (wxAuthRes == null) {
+            throw new Exception("获取用户信息失败");
+        }
+        UserInfo userInfo = null;
+        if (pUserInfoHibernateDao.checkOpenId(wxAuthRes.getOpenid())) {
+            userInfo = pUserInfoHibernateDao.updateUserByOpenId(wxAuthRes.getOpenid(), wxAuthRes.getUnionid(), wxAuthRes.getSession_key());
+        } else {
+            userInfo = pUserInfoHibernateDao.createUserByOpenId(wxAuthRes.getOpenid(), wxAuthRes.getUnionid(), wxAuthRes.getSession_key(), wxUserInfo.getNickName());
+        }
+        if (userInfo == null) {
+            throw new Exception("获取用户信息失败");
+        }
+        WxResponseUserInfo wxResponseUserInfo = new WxResponseUserInfo();
+        wxResponseUserInfo.setSession(userInfo.getSession());
+        wxResponseUserInfo.setUserName(userInfo.getUserName());
+        wxResponseUserInfo.setCode(200);
+        return wxResponseUserInfo;
+    }
 }
