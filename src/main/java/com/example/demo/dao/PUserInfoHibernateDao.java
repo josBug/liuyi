@@ -269,7 +269,11 @@ public class PUserInfoHibernateDao {
         userInfo.setSession("");
         userInfo.setStatus(0);
         userInfo.setEmailCode("");
-
+        userInfo.setNickName(userName);
+        userInfo.setWxUnionId("");
+        userInfo.setWxOpenId("");
+        userInfo.setSessionKey("");
+        userInfo.setExpireSessionTime(LocalDateTime.now().plusDays(2));
 
         session.save(userInfo);
 
