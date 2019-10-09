@@ -277,7 +277,7 @@ public class UserController {
         }
         UserInfo userInfo = null;
         if (pUserInfoHibernateDao.checkOpenId(wxAuthRes.getOpenid())) {
-            userInfo = pUserInfoHibernateDao.updateUserByOpenId(wxAuthRes.getOpenid(), wxAuthRes.getUnionid(), wxAuthRes.getSession_key());
+            userInfo = pUserInfoHibernateDao.updateUserByOpenId(wxAuthRes.getOpenid(), wxAuthRes.getUnionid(), wxAuthRes.getSession_key(), wxUserInfo.getNickName());
         } else {
             userInfo = pUserInfoHibernateDao.createUserByOpenId(wxAuthRes.getOpenid(), wxAuthRes.getUnionid(), wxAuthRes.getSession_key(), wxUserInfo.getNickName());
         }
