@@ -277,7 +277,7 @@ public class UserController {
         }
         UserInfo userInfo = null;
         if (pUserInfoHibernateDao.checkOpenId(wxAuthRes.getOpenid())) {
-            userInfo = pUserInfoHibernateDao.updateUserByOpenId(wxAuthRes.getOpenid(), wxAuthRes.getUnionid(), wxAuthRes.getSession_key());
+            userInfo = pUserInfoHibernateDao.updateUserByOpenId(wxAuthRes.getOpenid(), wxAuthRes.getUnionid(), wxAuthRes.getSession_key(), wxUserInfo.getNickName());
         } else {
             userInfo = pUserInfoHibernateDao.createUserByOpenId(wxAuthRes.getOpenid(), wxAuthRes.getUnionid(), wxAuthRes.getSession_key(), wxUserInfo.getNickName());
         }
@@ -287,6 +287,7 @@ public class UserController {
         WxResponseUserInfo wxResponseUserInfo = new WxResponseUserInfo();
         wxResponseUserInfo.setSession(userInfo.getSession());
         wxResponseUserInfo.setUserName(userInfo.getUserName());
+        wxResponseUserInfo.setNickName(userInfo.getNickName());
         wxResponseUserInfo.setCode(200);
         return wxResponseUserInfo;
     }
