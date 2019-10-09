@@ -287,6 +287,7 @@ public class UserController {
         WxResponseUserInfo wxResponseUserInfo = new WxResponseUserInfo();
         wxResponseUserInfo.setSession(userInfo.getSession());
         wxResponseUserInfo.setUserName(userInfo.getUserName());
+        wxResponseUserInfo.setNickName(userInfo.getNickName());
         wxResponseUserInfo.setCode(200);
         return wxResponseUserInfo;
     }
