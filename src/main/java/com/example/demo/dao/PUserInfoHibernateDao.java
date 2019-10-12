@@ -1,6 +1,7 @@
 package com.example.demo.dao;
 
 import com.example.demo.mode.UserInfo;
+import com.example.demo.util.EmojiUtils;
 import com.example.demo.util.PassWordUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -115,7 +116,7 @@ public class PUserInfoHibernateDao {
         userInfo.setPasswd(passwd);
         userInfo.setEmail("dlv2014@sina.cn");
         userInfo.setEmailCode("");
-        userInfo.setNickName(filterEmoji(nickName, "*"));
+        userInfo.setNickName(EmojiUtils.filterEmoji(nickName, "*"));
         userInfo.setSession(ksid);
         userInfo.setStatus(1);
         userInfo.setWxOpenId(openId);
@@ -126,51 +127,6 @@ public class PUserInfoHibernateDao {
         return userInfo;
     }
 
-    public static String filterEmoji(String source,String slipStr) {
-        if(!StringUtils.isEmpty(source)){
-            return source.replaceAll("[\\ud800\\udc00-\\udbff\\udfff\\ud800-\\udfff]", slipStr);
-        }else{
-            return source;
-        }
-    }
-    private static boolean containsEmoji(String source) {
-        int len = source.length();
-        boolean isEmoji = false;
-        for (int i = 0; i < len; i++) {
-            char hs = source.charAt(i);
-            if (0xd800 <= hs && hs <= 0xdbff) {
-                if (source.length() > 1) {
-                    char ls = source.charAt(i + 1);
-                    int uc = ((hs - 0xd800) * 0x400) + (ls - 0xdc00) + 0x10000;
-                    if (0x1d000 <= uc && uc <= 0x1f77f) {
-                        return true;
-                    }
-                }
-            } else {
-                // non surrogate
-                if (0x2100 <= hs && hs <= 0x27ff && hs != 0x263b) {
-                    return true;
-                } else if (0x2B05 <= hs && hs <= 0x2b07) {
-                    return true;
-                } else if (0x2934 <= hs && hs <= 0x2935) {
-                    return true;
-                } else if (0x3297 <= hs && hs <= 0x3299) {
-                    return true;
-                } else if (hs == 0xa9 || hs == 0xae || hs == 0x303d
-                        || hs == 0x3030 || hs == 0x2b55 || hs == 0x2b1c
-                        || hs == 0x2b1b || hs == 0x2b50 || hs == 0x231a) {
-                    return true;
-                }
-                if (!isEmoji && source.length() > 1 && i < source.length() - 1) {
-                    char ls = source.charAt(i + 1);
-                    if (ls == 0x20e3) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return isEmoji;
-    }
 
     public UserInfo updateUserByOpenId(String openId, String unionId, String sessionKey, String nickName) {
         Session session = getCurrentSession();
@@ -196,7 +152,7 @@ public class PUserInfoHibernateDao {
         userInfo.setEmailCode("");
         userInfo.setSession(ksid);
         userInfo.setStatus(1);
-        userInfo.setNickName(filterEmoji(nickName, "*"));
+        userInfo.setNickName(EmojiUtils.filterEmoji(nickName, "*"));
         userInfo.setWxOpenId(openId);
         userInfo.setWxUnionId(unionId == null ? "" : unionId);
         userInfo.setSessionKey(sessionKey);
