@@ -51,6 +51,7 @@
         <!-- 指定关联的 .hbm.xml 文件 -->
         <mapping class="com.example.demo.mode.GoodsRecord"/>
         <mapping class="com.example.demo.mode.UserInfo"/>
+        <mapping class="com.example.demo.mode.BuyerInfo"/>
     </session-factory>
 
 </hibernate-configuration>
