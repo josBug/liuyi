@@ -56,7 +56,7 @@ public class PBrandInfoHibernateDao {
 
     public List<BrandInfo> listBrand(int offset, int limit, Long userId) {
         Session session = getCurrentSession();
-        Query query = session.createQuery("FROM BuyerInfo where userId = :userId");
+        Query query = session.createQuery("FROM BrandInfo where userId = :userId");
         query.setParameter("userId", userId);
         query.setMaxResults(limit);
         query.setFirstResult(offset);
@@ -66,7 +66,7 @@ public class PBrandInfoHibernateDao {
 
     public List<BrandInfo> listBrandById(long id, int limit, Long userId) {
         Session session = getCurrentSession();
-        Query query = session.createQuery("FROM BuyerInfo where userId = :userId and id > :id order by id asc");
+        Query query = session.createQuery("FROM BrandInfo where userId = :userId and id > :id order by id asc");
         query.setParameter("userId", userId);
         query.setParameter("id", id);
         query.setMaxResults(limit);
