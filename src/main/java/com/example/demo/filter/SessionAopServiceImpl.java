@@ -25,7 +25,7 @@ public class SessionAopServiceImpl{
     @Autowired
     private PUserInfoHibernateDao pUserInfoHibernateDao;
 
-    @Pointcut("within(com.example.demo.controller.OperationController || com.example.demo.controller.BuyerController)")
+    @Pointcut("within(com.example.demo.controller.OperationController || com.example.demo.controller.BuyerController || com.example.demo.controller.BrandController)")
     public void execuStart() {
     }
 

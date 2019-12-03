@@ -52,6 +52,8 @@
         <mapping class="com.example.demo.mode.GoodsRecord"/>
         <mapping class="com.example.demo.mode.UserInfo"/>
         <mapping class="com.example.demo.mode.BuyerInfo"/>
+        <mapping class="com.example.demo.mode.BrandInfo"/>
+
     </session-factory>
 
 </hibernate-configuration>
