@@ -46,4 +46,18 @@ public class BrandController {
         List<BrandInfo> brandInfos = pBrandInfoHibernateDao.listBrand(keyWordRequest.getOffset(), keyWordRequest.getLimit(), lYopRequest.getUserId());
         return brandInfos;
     }
+
+    @RequestMapping(value = "/search/brand/id",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public List<BrandInfo> searchBuyerById(@RequestBody LYopRequest lYopRequest) {
+        KeyWordRequest keyWordRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(KeyWordRequest.class));
+        List<BrandInfo> brandInfos = pBrandInfoHibernateDao.searchBrandById(EmojiUtils.filterEmoji(keyWordRequest.getKeyword(), "*"), keyWordRequest.getId(), keyWordRequest.getLimit(), lYopRequest.getUserId());
+        return brandInfos;
+    }
+
+    @RequestMapping(value = "/list/brand/id",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public List<BrandInfo> listBuyerById(@RequestBody LYopRequest lYopRequest) {
+        KeyWordRequest keyWordRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(KeyWordRequest.class));
+        List<BrandInfo> brandInfos = pBrandInfoHibernateDao.listBrandById(keyWordRequest.getId(), keyWordRequest.getLimit(), lYopRequest.getUserId());
+        return brandInfos;
+    }
 }
