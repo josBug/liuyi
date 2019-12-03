@@ -10,4 +10,6 @@ public class KeyWordRequest {
     private int offset;
 
     private int limit;
+
+    private long id;
 }

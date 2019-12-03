@@ -63,4 +63,25 @@ public class PBrandInfoHibernateDao {
         List<BrandInfo> list = query.list();
         return list;
     }
+
+    public List<BrandInfo> listBrandById(long id, int limit, Long userId) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("FROM BuyerInfo where userId = :userId and id > :id order by id asc");
+        query.setParameter("userId", userId);
+        query.setParameter("id", id);
+        query.setMaxResults(limit);
+        List<BrandInfo> list = query.list();
+        return list;
+    }
+
+    public List<BrandInfo> searchBrandById(String keyword, long id, int limit, Long userId) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("FROM BrandInfo where name like :keyword and userId = :userId and id > :id order by id asc");
+        query.setParameter("keyword", "%" + keyword + "%");
+        query.setParameter("userId", userId);
+        query.setParameter("id", id);
+        query.setMaxResults(limit);
+        List<BrandInfo> list = query.list();
+        return list;
+    }
 }
