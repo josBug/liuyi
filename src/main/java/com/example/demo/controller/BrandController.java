@@ -60,4 +60,10 @@ public class BrandController {
         List<BrandInfo> brandInfos = pBrandInfoHibernateDao.listBrandById(keyWordRequest.getId(), keyWordRequest.getLimit(), lYopRequest.getUserId());
         return brandInfos;
     }
+
+    @RequestMapping(value = "/brand/delete",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+    public void deleteBrand(@RequestBody LYopRequest lYopRequest) {
+        KeyWordRequest keyWordRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(KeyWordRequest.class));
+        pBrandInfoHibernateDao.deleteBrand(keyWordRequest.getId(), lYopRequest.getUserId());
+    }
 }

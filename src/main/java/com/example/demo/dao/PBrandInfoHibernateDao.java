@@ -84,4 +84,12 @@ public class PBrandInfoHibernateDao {
         List<BrandInfo> list = query.list();
         return list;
     }
+
+    public void deleteBrand(Long id, Long userId) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("DELETE FROM BrandInfo WHERE id = :id and userId = :userId");
+        query.setParameter("userId", userId);
+        query.setParameter("id", id);
+        query.executeUpdate();
+    }
 }
