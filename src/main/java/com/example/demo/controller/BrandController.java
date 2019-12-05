@@ -27,35 +27,35 @@ public class BrandController {
     private PBrandInfoHibernateDao pBrandInfoHibernateDao;
 
     @RequestMapping(value = "/add/brand",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public BrandInfo addBuyer(@RequestBody LYopRequest lYopRequest) {
+    public BrandInfo addBrand(@RequestBody LYopRequest lYopRequest) {
         BrandRequest brandRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(BrandRequest.class));
         BrandInfo brandInfo = pBrandInfoHibernateDao.addBrand(EmojiUtils.filterEmoji(brandRequest.getName(), "*"), lYopRequest.getUserId(), brandRequest.getSource());
         return brandInfo;
     }
 
     @RequestMapping(value = "/search/brand",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public List<BrandInfo> searchBuyer(@RequestBody LYopRequest lYopRequest) {
+    public List<BrandInfo> searchBrand(@RequestBody LYopRequest lYopRequest) {
         KeyWordRequest keyWordRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(KeyWordRequest.class));
         List<BrandInfo> brandInfos = pBrandInfoHibernateDao.searchBrand(EmojiUtils.filterEmoji(keyWordRequest.getKeyword(), "*"), lYopRequest.getUserId(), keyWordRequest.getOffset(), keyWordRequest.getLimit());
         return brandInfos;
     }
 
     @RequestMapping(value = "/list/brand",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public List<BrandInfo> listBuyer(@RequestBody LYopRequest lYopRequest) {
+    public List<BrandInfo> listBrand(@RequestBody LYopRequest lYopRequest) {
         KeyWordRequest keyWordRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(KeyWordRequest.class));
         List<BrandInfo> brandInfos = pBrandInfoHibernateDao.listBrand(keyWordRequest.getOffset(), keyWordRequest.getLimit(), lYopRequest.getUserId());
         return brandInfos;
     }
 
     @RequestMapping(value = "/search/brand/id",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public List<BrandInfo> searchBuyerById(@RequestBody LYopRequest lYopRequest) {
+    public List<BrandInfo> searchBrandById(@RequestBody LYopRequest lYopRequest) {
         KeyWordRequest keyWordRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(KeyWordRequest.class));
         List<BrandInfo> brandInfos = pBrandInfoHibernateDao.searchBrandById(EmojiUtils.filterEmoji(keyWordRequest.getKeyword(), "*"), keyWordRequest.getId(), keyWordRequest.getLimit(), lYopRequest.getUserId());
         return brandInfos;
     }
 
     @RequestMapping(value = "/list/brand/id",produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-    public List<BrandInfo> listBuyerById(@RequestBody LYopRequest lYopRequest) {
+    public List<BrandInfo> listBrandById(@RequestBody LYopRequest lYopRequest) {
         KeyWordRequest keyWordRequest = mapper.convertValue(lYopRequest.getObject(), mapper.constructType(KeyWordRequest.class));
         List<BrandInfo> brandInfos = pBrandInfoHibernateDao.listBrandById(keyWordRequest.getId(), keyWordRequest.getLimit(), lYopRequest.getUserId());
         return brandInfos;
