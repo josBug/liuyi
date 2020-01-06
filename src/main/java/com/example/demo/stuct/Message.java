@@ -27,5 +27,7 @@ public class Message {
 
     private int isPay;
 
+    private String brandName;
+
     private String source;
 }
