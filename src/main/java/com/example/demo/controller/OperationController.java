@@ -61,6 +61,7 @@ public class OperationController {
                 goodsRecord.setIsPay(message.getIsPay());
                 goodsRecord.setExpressCode("");
                 goodsRecord.setSource(message.getSource());
+                goodsRecord.setBrandName(message.getBrandName());
                 goodsRecord.setUserId(lYopRequest.getUserId());
                 pGoodsRecordHibernateDao.save(goodsRecord);
 

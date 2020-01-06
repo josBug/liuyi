@@ -39,4 +39,6 @@ public class SearchParam {
     private int isSend = -1;
 
     private String sort = "asc";
+
+    private String brandName;
 }
