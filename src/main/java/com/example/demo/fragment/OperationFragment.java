@@ -38,6 +38,15 @@ public class OperationFragment {
             param.put("name", "%" + searchParam.getName() + "%");
             sql += "name like :name";
         }
+        if (searchParam.getBrandName() != null && !searchParam.getBrandName().isEmpty()) {
+            if (param.isEmpty()) {
+                sql += "where ";
+            } else {
+                sql += " and ";
+            }
+            param.put("brandName", "%" + searchParam.getBrandName() + "%");
+            sql += "brandName like :brandName";
+        }
         if (searchParam.getIsPay() != -1) {
             if (param.isEmpty()) {
                 sql += "where ";

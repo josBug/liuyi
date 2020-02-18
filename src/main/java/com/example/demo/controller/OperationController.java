@@ -188,6 +188,7 @@ public class OperationController {
             oldGoodsRecord.setCode(goodsRecord.getCode());
             oldGoodsRecord.setGoodsName(goodsRecord.getGoodsName());
             oldGoodsRecord.setAmount(goodsRecord.getAmount());
+            oldGoodsRecord.setBrandName(goodsRecord.getBrandName());
             pGoodsRecordHibernateDao.update(oldGoodsRecord);
             responseDemo.setCode(200);
             responseDemo.setResult("success");
@@ -211,6 +212,7 @@ public class OperationController {
                 goodsRecord.setCountPrice(new BigDecimal(goodsRecord.getSellPrice() * goodsRecord.getAmount()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 goodsRecord.setTip(new BigDecimal(goodsRecord.getSellPrice()).subtract(new BigDecimal(goodsRecord.getOldPrice())).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 goodsRecord.setUserName(lYopRequest.getUserName());
+                goodsRecord.setBrandName(goodsRecord.getBrandName());
                 pGoodsRecordHibernateDao.update(goodsRecord);
             });
             responseDemo.setCode(200);
