@@ -30,4 +30,6 @@ public class Message {
     private String brandName;
 
     private String source;
+
+    private String imageUrl;
 }

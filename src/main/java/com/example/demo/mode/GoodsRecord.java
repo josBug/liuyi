@@ -73,6 +73,9 @@ public class GoodsRecord {
     @Column(name = "brand_name")
     private String brandName;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(name="created_at", insertable = false, updatable = false)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

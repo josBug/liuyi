@@ -28,6 +28,9 @@ public class BuyerInfo {
     @Column(name="user_id")
     private Long userId;
 
+    @Column(name="initial")
+    private String initial;
+
     @Column(name="created_at", insertable = false, updatable = false)
     @JsonFormat( pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
