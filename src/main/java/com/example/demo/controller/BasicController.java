@@ -42,6 +42,6 @@ public class BasicController {
     }
 
     private String getUrl(String fileName) {
-        return String.format("https://lywss.oss-cn-beijing.aliyuncs.com/%s?x-oss-process=image/resize,w_100");
+        return String.format("https://lywss.oss-cn-beijing.aliyuncs.com/%s?x-oss-process=image/resize,w_100", fileName);
     }
 }
