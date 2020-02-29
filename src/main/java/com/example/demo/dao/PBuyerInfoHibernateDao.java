@@ -27,7 +27,7 @@ public class PBuyerInfoHibernateDao {
         return sessionFactory.getCurrentSession();
     }
 
-    public BuyerInfo addBuyer(String name, Long userId) {
+    public BuyerInfo addBuyer(String name, Long userId, String initial) {
         Session session = getCurrentSession();
         Query query = session.createQuery("FROM BuyerInfo where name = :name and userId = :userId");
         query.setParameter("name", name);
@@ -38,6 +38,7 @@ public class PBuyerInfoHibernateDao {
             BuyerInfo buyerInfo = new BuyerInfo();
             buyerInfo.setName(name);
             buyerInfo.setUserId(userId);
+            buyerInfo.setInitial(initial);
             session.save(buyerInfo);
             return buyerInfo;
         }
@@ -48,7 +49,7 @@ public class PBuyerInfoHibernateDao {
 
     public List<BuyerInfo> searchBuyer(String keyword, Long userId, int offset, int limit) {
         Session session = getCurrentSession();
-        Query query = session.createQuery("FROM BuyerInfo where name like :keyword and userId = :userId");
+        Query query = session.createQuery("FROM BuyerInfo where name like :keyword and userId = :userId order by initial asc");
         query.setParameter("keyword", "%" + keyword + "%");
         query.setParameter("userId", userId);
         query.setMaxResults(limit);
@@ -59,7 +60,7 @@ public class PBuyerInfoHibernateDao {
 
     public List<BuyerInfo> listBuyer(int offset, int limit, Long userId) {
         Session session = getCurrentSession();
-        Query query = session.createQuery("FROM BuyerInfo where userId = :userId");
+        Query query = session.createQuery("FROM BuyerInfo where userId = :userId order by initial asc");
         query.setParameter("userId", userId);
         query.setMaxResults(limit);
         query.setFirstResult(offset);
